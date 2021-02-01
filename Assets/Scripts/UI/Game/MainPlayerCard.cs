@@ -26,14 +26,13 @@ public class MainPlayerCard : SingleCard, IPointerEnterHandler, IPointerExitHand
     private void ToggleSelected()
     {
         changed = true;
-        selected = !selected;
         if (selected)
         {
-            OnSelected();
+            Unselect();
         }
         else
         {
-            OnUnselected();
+            Select();
         }
 
     }
@@ -50,7 +49,17 @@ public class MainPlayerCard : SingleCard, IPointerEnterHandler, IPointerExitHand
     }
 
 
+    public void Select()
+    {
+        selected = true;
+        OnSelected();
+    }
 
+    public void Unselect()
+    {
+        selected = false;
+        OnUnselected();
+    }
 
     public void OnPointerDown(PointerEventData eventData)
     {

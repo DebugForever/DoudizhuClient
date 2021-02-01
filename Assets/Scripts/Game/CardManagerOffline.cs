@@ -46,7 +46,7 @@ class CardManagerOffline
         player3Cards.Clear();
 
         mainPlayerCards.AddRange(allCards.Take(count));
-        mainPlayerCards.Sort();
+        mainPlayerCards.Sort((a, b) => -a.CompareTo(b));//从大到小排序
         EventCenter.BroadCast(EventType.MainPlayerAddCards, mainPlayerCards.ToArray());
 
         player2Cards.AddRange(allCards.Skip(count).Take(count));

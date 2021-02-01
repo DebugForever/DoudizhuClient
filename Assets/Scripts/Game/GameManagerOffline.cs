@@ -32,7 +32,10 @@ public class GameManagerOffline : MonoBehaviour
     /// </summary>
     private void MainPlayerPlayCard()
     {
-        print(string.Join(",", view.mainPlayerView.GetSelectedCardsId()));
-        view.mainPlayerView.RemoveSelectedCards();
+        Card[] cards = view.mainPlayerView.GetSelectedCards();
+        print(CardSet.GetCardSetType(cards));
+
+        //view.mainPlayerView.RemoveSelectedCards();
+        view.mainPlayerView.UnselectAllCard();
     }
 }

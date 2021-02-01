@@ -63,6 +63,18 @@ public class UIMainPlayer : MonoBehaviour
         return result.ToArray();
     }
 
+    public Card[] GetSelectedCards()
+    {
+        List<Card> result = new List<Card>();
+        for (int i = 0; i < cards.Count; i++)
+        {
+            MainPlayerCard card = cards[i];
+            if (card.selected)
+                result.Add(card.card);
+        }
+        return result.ToArray();
+    }
+
     public void RemoveSelectedCards()
     {
         int[] removeIndexs = GetSelectedCardsId();
@@ -74,6 +86,13 @@ public class UIMainPlayer : MonoBehaviour
 
     }
 
+    public void UnselectAllCard()
+    {
+        foreach (MainPlayerCard mainPlayerCard in cards)
+        {
+            mainPlayerCard.Unselect();
+        }
+    }
 
     public void AddCard(Card card)
     {

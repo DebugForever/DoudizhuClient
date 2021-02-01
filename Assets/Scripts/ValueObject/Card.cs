@@ -8,12 +8,33 @@ using UnityEngine;
 /// </summary>
 public enum CardType
 {
-    JokerRed,//大王
-    JokerBlack,//小王
     Spade,//黑桃♠
     Heart,//红心♥
     Club,//梅花♣
     Diamond,//方块♦
+    JokerBlack,//小王
+    JokerRed,//大王
+}
+
+public enum CardWeight
+{
+    wMin,
+    w3,
+    w4,
+    w5,
+    w6,
+    w7,
+    w8,
+    w9,
+    w10,
+    wJ,
+    wQ,
+    wK,
+    wA,
+    w2,
+    wJokerBlack,
+    wJokerRed,
+    wMax,
 }
 
 /// <summary>
@@ -34,7 +55,37 @@ public class Card : IComparable<Card>
     public CardType type;
     public int number;
 
-    private readonly int[] sortOrder = new int[16] { 0, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15 };
+    /// <summary>
+    /// 大小，即比较权重
+    /// </summary>
+    public CardWeight weight
+    {
+        get
+        {
+            if (number > 15)
+                return CardWeight.wMax;
+            return sortOrder[number];
+        }
+    }
+
+    private readonly CardWeight[] sortOrder = new CardWeight[16] {
+        CardWeight.wMin,
+        CardWeight.wA,
+        CardWeight.w2,
+        CardWeight.w3,
+        CardWeight.w4,
+        CardWeight.w5,
+        CardWeight.w6,
+        CardWeight.w7,
+        CardWeight.w8,
+        CardWeight.w9,
+        CardWeight.w10,
+        CardWeight.wJ,
+        CardWeight.wQ,
+        CardWeight.wK,
+        CardWeight.wJokerBlack,
+        CardWeight.wJokerRed,
+    };
 
     public CardColor color
     {
@@ -103,7 +154,7 @@ public class Card : IComparable<Card>
     //这个比较函数用于排序
     public int CompareTo(Card other)
     {
-        return number == other.number ? type.CompareTo(other.type) : -sortOrder[number].CompareTo(sortOrder[other.number]);
+        return number == other.number ? type.CompareTo(other.type) : weight.CompareTo(other.weight);
     }
 
     public Sprite GetSprite()
