@@ -14,6 +14,8 @@ public class GameManagerOffline : MonoBehaviour
 
         EventCenter.AddListener(EventType.TestEvent, Test);
         EventCenter.AddListener(EventType.PlayCard, MainPlayerPlayCard);
+        EventCenter.AddListener<Card[]>(EventType.PlayerPlayCard, PlayerPlayCard);
+        EventCenter.AddListener(EventType.PlayCardHint, PlayCardHint);
     }
 
     private void Test()
@@ -25,6 +27,8 @@ public class GameManagerOffline : MonoBehaviour
     {
         EventCenter.RemoveListener(EventType.TestEvent, Test);
         EventCenter.RemoveListener(EventType.PlayCard, MainPlayerPlayCard);
+        EventCenter.RemoveListener<Card[]>(EventType.PlayerPlayCard, PlayerPlayCard);
+        EventCenter.RemoveListener(EventType.PlayCardHint, PlayCardHint);
     }
 
     /// <summary>
@@ -33,9 +37,29 @@ public class GameManagerOffline : MonoBehaviour
     private void MainPlayerPlayCard()
     {
         Card[] cards = view.mainPlayerView.GetSelectedCards();
-        print(CardSet.GetCardSetType(cards));
+        print(CardSet.GetCardSet(cards));
+        if (CardSet.GetCardSetType(cards) == CardSetType.Invalid)
+        {
+            EventCenter.BroadCast(EventType.UIFlashHint, "无效的组合");
+            view.mainPlayerView.UnselectAllCard();
+        }
+        else
+        {
+            view.mainPlayerView.RemoveSelectedCards();
+            view.mainPlayerView.UnselectAllCard();
 
-        //view.mainPlayerView.RemoveSelectedCards();
-        view.mainPlayerView.UnselectAllCard();
+            EventCenter.BroadCast(EventType.PlayerPlayCard, cards);
+        }
+    }
+
+    private void PlayCardHint()
+    {
+
+    }
+
+    private void PlayerPlayCard(Card[] cards)
+    {
+        view.lastHandCards.ClearCards();
+        view.lastHandCards.SetCards(cards);
     }
 }

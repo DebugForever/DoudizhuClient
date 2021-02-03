@@ -52,8 +52,13 @@ public enum CardColor
 /// </summary>
 public class Card : IComparable<Card>
 {
-    public CardType type;
-    public int number;
+    public CardType type { get; private set; }
+    public int number { get; private set; }
+
+    /// <summary>
+    /// 用于标识这是手牌的第几张
+    /// </summary>
+    public int handId;
 
     /// <summary>
     /// 大小，即比较权重
@@ -149,6 +154,16 @@ public class Card : IComparable<Card>
         }
     }
 
+    /// <summary>
+    /// 大王
+    /// </summary>
+    public static Card JokerRed => new Card(53);
+
+    /// <summary>
+    /// 小王
+    /// </summary>
+    public static Card JokerBlack => new Card(52);
+
     //因为大王小王的数字已经定义了是15和14，
     //所以这里可以直接用number比较
     //这个比较函数用于排序
@@ -167,6 +182,28 @@ public class Card : IComparable<Card>
         if (type == CardType.JokerBlack || type == CardType.JokerRed)
             return type.ToString();
         else
-            return type.ToString() + number.ToString();
+        {
+            string numberString;
+            switch (weight)
+            {
+                case CardWeight.wJ:
+                    numberString = "J";
+                    break;
+                case CardWeight.wQ:
+                    numberString = "Q";
+                    break;
+                case CardWeight.wK:
+                    numberString = "K";
+                    break;
+                case CardWeight.wA:
+                    numberString = "A";
+                    break;
+                default:
+                    numberString = number.ToString();
+                    break;
+            }
+            return type.ToString() + numberString;
+
+        }
     }
 }

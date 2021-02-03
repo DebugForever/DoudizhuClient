@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class MyTools
@@ -22,6 +23,23 @@ public class MyTools
         {
             GameObject.Destroy(t.gameObject);
         }
+    }
+
+    public static string IterToString<T>(IEnumerable<T> container)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.Append("[");
+        bool first = true;
+        foreach (var item in container)
+        {
+            if (!first)
+                builder.Append(",");
+
+            first = false;
+            builder.Append(item.ToString());
+        }
+        builder.Append("]");
+        return builder.ToString();
     }
 }
 

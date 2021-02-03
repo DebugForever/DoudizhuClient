@@ -1,18 +1,36 @@
 ﻿public enum EventType
 {
-    TestEvent,//用于暂时测试一个功能，一般不使用
-    UIShowRegister,//显示注册面板
-    UIShowLogin,//显示登陆面板
-    UIFlashHint,//显示指定的提示文字
-    UIShowRankList,//显示排行榜面板
-    UISetRankList,//设置排行榜信息
-    PlayCard,//出牌
-    PassTurn,//不出
-    PlayCardHint,//提示
-    MainPlayerAddCards,//给主玩家添加一些牌
-    Player2AddCards,//给玩家2添加一些牌
-    Player3AddCards,//给玩家3添加一些牌
-    MainPlayerRemoveCards,//删除主玩家一些牌
-    Player2RemoveCards,//删除玩家2一些牌
-    Player3RemoveCards,//删除玩家3一些牌
+    ///<summary>用于暂时测试一个功能，一般不使用</summary>
+    TestEvent,
+    ///<summary>显示注册面板</summary>
+    UIShowRegister,
+    ///<summary>显示登陆面板</summary>
+    UIShowLogin,
+    ///<summary>显示指定的提示文字</summary>
+    UIFlashHint,
+    ///<summary>显示排行榜面板</summary>
+    UIShowRankList,
+    ///<summary>设置排行榜信息</summary>
+    UISetRankList,
+    ///<summary>出牌按钮</summary>
+    PlayCard,
+    ///<summary>不出按钮</summary>
+    PassTurn,
+    ///<summary>提示按钮</summary>
+    PlayCardHint,
+    ///<summary>给主玩家添加一些牌</summary>
+    MainPlayerAddCards,
+    ///<summary>给玩家2添加一些牌</summary>
+    Player2AddCards,
+    ///<summary>给玩家3添加一些牌</summary>
+    Player3AddCards,
+    ///<summary>删除主玩家一些牌</summary>
+    MainPlayerRemoveCards,
+    ///<summary>删除玩家2一些牌</summary>
+    Player2RemoveCards,
+    ///<summary>删除玩家3一些牌</summary>
+    Player3RemoveCards,
+    ///<summary>任意玩家出牌</summary>
+    PlayerPlayCard,
+
 }

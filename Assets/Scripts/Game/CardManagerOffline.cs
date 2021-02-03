@@ -10,9 +10,10 @@ using UnityEngine;
 /// </summary>
 class CardManagerOffline
 {
-    private List<Card> mainPlayerCards = new List<Card>();
+    public List<Card> mainPlayerCards = new List<Card>();
     private List<Card> player2Cards = new List<Card>();
     private List<Card> player3Cards = new List<Card>();
+
 
     /// <summary>
     /// 保存所有54张卡牌，共用一份
@@ -45,7 +46,8 @@ class CardManagerOffline
         player2Cards.Clear();
         player3Cards.Clear();
 
-        mainPlayerCards.AddRange(allCards.Take(count));
+        //mainPlayerCards.AddRange(allCards.Take(count));
+        mainPlayerCards.AddRange(allCards);
         mainPlayerCards.Sort((a, b) => -a.CompareTo(b));//从大到小排序
         EventCenter.BroadCast(EventType.MainPlayerAddCards, mainPlayerCards.ToArray());
 
