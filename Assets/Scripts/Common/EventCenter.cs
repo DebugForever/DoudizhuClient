@@ -53,14 +53,19 @@ public class EventCenter
     {
         CheckExist(eventType);
         Action action = eventMap[eventType] as Action;
-        action?.Invoke();
+        action.Invoke();
     }
 
     public static void BroadCast<T>(EventType eventType, T arg)
     {
         CheckExist(eventType);
-        Action<T> action = eventMap[eventType] as Action<T>;
-        action?.Invoke(arg);
+        Delegate dele = eventMap[eventType];
+        Action<T> action = dele as Action<T>;
+        if (action == null && dele != null)
+        {
+            throw new ArgumentException(string.Format("delegate {0} does not match args({1})", dele, arg.GetType().ToString()));
+        }
+        action.Invoke(arg);
     }
 
 
@@ -104,8 +109,6 @@ public class EventCenter
 
     }
 
-
-
     private static void CheckExist(EventType eventType)
     {
         if (!eventMap.ContainsKey(eventType))
@@ -113,4 +116,7 @@ public class EventCenter
             throw new ArgumentException(string.Format("EventType {0} not registered!", eventType));
         }
     }
+
+
+
 }
