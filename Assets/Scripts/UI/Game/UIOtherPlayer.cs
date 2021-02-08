@@ -11,6 +11,8 @@ public class UIOtherPlayer : MonoBehaviour
     // === auto generated code end === 
     private Transform cardsTransform;
     private Image headIconImage;
+    private UITimer timer;
+
     private int _coin;
 
     private void Awake()
@@ -21,6 +23,7 @@ public class UIOtherPlayer : MonoBehaviour
         // === auto generated code end === 
         cardsTransform = transform.Find("Cards");
         headIconImage = transform.Find("InfoPanel/HeadIcon/HeadIconMask/HeadIconImage").GetComponent<Image>();
+        timer = transform.Find("Timer").GetComponent<UITimer>();
     }
 
     public string username

@@ -10,8 +10,14 @@ using System.Threading.Tasks;
 /// </summary>
 public class CardHand
 {
+    #region 成员变量与访问器
     private List<Card> _cards;
-    public List<Card> cards { get => _cards; private set { _cards = value; cacheVaild = false; } }
+    private List<Card> cards { get => _cards; set { _cards = value; cacheVaild = false; } }
+
+    /// <summary>
+    /// 获取全部手牌
+    /// </summary>
+    public Card[] GetCards() => cards.ToArray();
 
     public Dictionary<int, int> weightCountDict
     {
@@ -41,12 +47,17 @@ public class CardHand
 
         return dict;
     }
-
+    #endregion
     #region 作为容器操作
     public CardHand(Card[] cards)
     {
         this.cards = new List<Card>(cards);
         ResetHandIds();
+    }
+
+    public CardHand()
+    {
+        this.cards = new List<Card>();
     }
 
     public void AddCards(Card[] cards)
@@ -71,6 +82,11 @@ public class CardHand
         }
     }
 
+    public void Clear()
+    {
+        this.cards.Clear();
+    }
+
     /// <summary>
     /// 重新设置每张卡的HandId，手牌张数不会超过20，
     /// 故没有对删除添加做优化，直接重置即可
@@ -82,6 +98,23 @@ public class CardHand
             cards[i].handId = i;
         }
     }
+
+    /// <summary>
+    /// 以打牌最常见的方式排序，即降序排列
+    /// </summary>
+    public void Sort()
+    {
+        cards.Sort((a, b) => -a.CompareTo(b));
+        ResetHandIds();
+    }
+
+    public void Sort(IComparer<Card> comparer)
+    {
+        cards.Sort(comparer);
+        ResetHandIds();
+    }
+
+
     #endregion
     #region 获取牌型
     /// <summary>

@@ -10,9 +10,9 @@ using UnityEngine;
 /// </summary>
 class CardManagerOffline
 {
-    public List<Card> mainPlayerCards = new List<Card>();
-    private List<Card> player2Cards = new List<Card>();
-    private List<Card> player3Cards = new List<Card>();
+    public CardHand mainPlayerHand = new CardHand();
+    public CardHand player2Hand = new CardHand();
+    public CardHand player3Hand = new CardHand();
 
 
     /// <summary>
@@ -42,22 +42,21 @@ class CardManagerOffline
         MyTools.Shuffle(allCards);
         const int count = 17;
 
-        mainPlayerCards.Clear();
-        player2Cards.Clear();
-        player3Cards.Clear();
+        mainPlayerHand.Clear();
+        player2Hand.Clear();
+        player3Hand.Clear();
 
-        //mainPlayerCards.AddRange(allCards.Take(count));
-        mainPlayerCards.AddRange(allCards);
-        mainPlayerCards.Sort((a, b) => -a.CompareTo(b));//从大到小排序
-        EventCenter.BroadCast(EventType.MainPlayerAddCards, mainPlayerCards.ToArray());
+        mainPlayerHand.AddCards(allCards.Take(count).ToArray());
+        mainPlayerHand.Sort();
+        EventCenter.BroadCast(EventType.MainPlayerAddCards, mainPlayerHand.GetCards());
 
-        player2Cards.AddRange(allCards.Skip(count).Take(count));
-        player2Cards.Sort();
-        EventCenter.BroadCast(EventType.Player2AddCards, player2Cards.ToArray());
+        player2Hand.AddCards(allCards.Skip(count).Take(count).ToArray());
+        player2Hand.Sort();
+        EventCenter.BroadCast(EventType.Player2AddCards, player2Hand.GetCards());
 
-        player3Cards.AddRange(allCards.Skip(count * 2).Take(count));
-        player3Cards.Sort();
-        EventCenter.BroadCast(EventType.Player3AddCards, player3Cards.ToArray());
+        player3Hand.AddCards(allCards.Skip(count * 2).Take(count).ToArray());
+        player3Hand.Sort();
+        EventCenter.BroadCast(EventType.Player3AddCards, player3Hand.GetCards());
 
     }
 

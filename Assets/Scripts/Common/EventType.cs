@@ -32,5 +32,6 @@
     Player3RemoveCards,
     ///<summary>任意玩家出牌</summary>
     PlayerPlayCard,
-
+    ///<summary>玩家出牌超时</summary>
+    PlayerTimeUp,
 }

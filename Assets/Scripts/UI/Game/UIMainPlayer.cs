@@ -12,6 +12,7 @@ public class UIMainPlayer : MonoBehaviour
     // === auto generated code end === 
     private Transform cardsTransform;
     private Image headIconImage;
+    private UITimer timer;
     private List<MainPlayerCard> cards = new List<MainPlayerCard>();
 
     private int _coin;
@@ -28,6 +29,7 @@ public class UIMainPlayer : MonoBehaviour
         // === auto generated code end === 
         cardsTransform = transform.Find("Cards");
         headIconImage = transform.Find("HeadIcon/HeadIconMask/HeadIconImage").GetComponent<Image>();
+        timer = transform.Find("Timer").GetComponent<UITimer>();
     }
 
     public string username

@@ -7,6 +7,10 @@ public class GameManagerOffline : MonoBehaviour
 {
     private GameView view;
     private CardManagerOffline cardManager;
+
+    private int currentPlayer = 1;
+
+
     void Awake()
     {
         view = GetComponentInChildren<GameView>();
@@ -18,17 +22,43 @@ public class GameManagerOffline : MonoBehaviour
         EventCenter.AddListener(EventType.PlayCardHint, PlayCardHint);
     }
 
-    private void Test()
-    {
-        cardManager.DealCard();
-    }
-
     private void OnDestroy()
     {
         EventCenter.RemoveListener(EventType.TestEvent, Test);
         EventCenter.RemoveListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.RemoveListener<Card[]>(EventType.PlayerPlayCard, PlayerPlayCard);
         EventCenter.RemoveListener(EventType.PlayCardHint, PlayCardHint);
+    }
+
+    private void FixedUpdate()
+    {
+
+    }
+
+    /// <summary>
+    /// 一名玩家的回合
+    /// </summary>
+    private void TakeTurn()
+    {
+        //回合开始，开协程计时60
+        //等待出牌或者计时结束
+        //出牌 - 终止协程
+        //计时结束 - 自动不出，先手则自动选择出牌
+        //下一回合
+        if (currentPlayer == 1)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+
+    private void Test()
+    {
+        cardManager.DealCard();
     }
 
     /// <summary>
