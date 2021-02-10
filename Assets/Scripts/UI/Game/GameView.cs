@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,7 +21,12 @@ public class GameView : MonoBehaviour
         EventCenter.AddListener<Card[]>(EventType.MainPlayerAddCards, MainPlayerAddCards);
         EventCenter.AddListener<Card[]>(EventType.Player2AddCards, Player2AddCards);
         EventCenter.AddListener<Card[]>(EventType.Player3AddCards, Player3AddCards);
+        EventCenter.AddListener<Card[]>(EventType.MainPlayerRemoveCards, MainPlayerRemoveCards);
+        EventCenter.AddListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
+        EventCenter.AddListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
     }
+
+
 
     private void Start()
     {
@@ -52,4 +58,22 @@ public class GameView : MonoBehaviour
     {
         player3View.AddCards(cards);
     }
+
+    private void MainPlayerRemoveCards(Card[] cards)
+    {
+        mainPlayerView.RemoveCards(cards);
+    }
+
+
+    private void Player2RemoveCards(Card[] cards)
+    {
+        player2View.RemoveCards(cards);
+    }
+
+    private void Player3RemoveCards(Card[] cards)
+    {
+        player3View.RemoveCards(cards);
+    }
+
+
 }

@@ -51,7 +51,7 @@ public enum CardSetType
 /// </summary>
 public class CardSet : IComparable<CardSet>
 {
-    public CardSetType SetType { get; private set; }
+    public CardSetType Type { get; private set; }
 
     /// <summary>
     /// 权值，表示这种牌的大小
@@ -86,10 +86,59 @@ public class CardSet : IComparable<CardSet>
 
     public CardSet(CardSetType setType, int keyNumber, int repeatCount, Card[] cards)
     {
-        this.SetType = setType;
+        this.Type = setType;
         this.KeyNumber = keyNumber;
         this.RepeatCount = repeatCount;
         this.Cards = cards;
+    }
+
+    private int GetCardSetTypeWeight(CardSetType setType)
+    {
+        switch (setType)
+        {
+            case CardSetType.Invalid:
+            case CardSetType.None:
+            default:
+                //无效牌型，最小
+                return -1;
+            case CardSetType.JokerBomb:
+                //王炸，最大
+                return 2;
+            case CardSetType.Bomb:
+                //普通炸弹
+                return 1;
+            case CardSetType.Single:
+            case CardSetType.Pair:
+            case CardSetType.Triple:
+            case CardSetType.TripleWithOne:
+            case CardSetType.TripleWithPair:
+            case CardSetType.Straight:
+            case CardSetType.DoubleStraight:
+            case CardSetType.TripleStraight:
+            case CardSetType.TripleStraightWithOne:
+            case CardSetType.TripleStraightWithPair:
+            case CardSetType.QuadraWithTwo:
+            case CardSetType.QuadraWithTwoPairs:
+                //普通牌型
+                return 0;
+        }
+    }
+
+    /// <summary>
+    /// 这个牌型能否压住另一个牌型？
+    /// </summary>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public bool IsGreaterThan(CardSet other)
+    {
+        if (Type == other.Type)
+        {
+            return KeyNumber > other.KeyNumber;
+        }
+
+        int thisWeight = GetCardSetTypeWeight(Type);
+        int otherWeight = GetCardSetTypeWeight(other.Type);
+        return thisWeight > otherWeight;
     }
 
     #region 重写和实现接口
@@ -98,13 +147,13 @@ public class CardSet : IComparable<CardSet>
     /// </summary>
     public int CompareTo(CardSet other)
     {
-        return SetType == other.SetType ? KeyNumber.CompareTo(other.KeyNumber) : SetType.CompareTo(other.SetType);
+        return Type == other.Type ? KeyNumber.CompareTo(other.KeyNumber) : Type.CompareTo(other.Type);
     }
 
     public override string ToString()
     {
         return string.Format("{0}<repeat{1},key{2}>:{3}",
-                             SetType.ToString(),
+                             Type.ToString(),
                              RepeatCount.ToString(),
                              KeyNumber.ToString(),
                              MyTools.IterToString(Cards));
@@ -334,12 +383,18 @@ public class CardSet : IComparable<CardSet>
         }
 
     }
+
+    /// <summary>
+    /// 这些牌能组成哪一种牌型？
+    /// </summary>
+    /// <param name="cards"></param>
+    /// <returns>能组成的牌型，无效返回invalid牌型</returns>
     public static CardSet GetCardSet(Card[] cards)
     {
         CardSetType setType = GetCardSetType(cards);
         List<(int cnt, int weight)> handData = GetHandDataCW(cards);
         CardSet result = new CardSet();
-        result.SetType = setType;
+        result.Type = setType;
         result.Cards = cards;
         result.KeyNumber = handData[handData.Count - 1].weight; //所有牌型的key都是最多的一种牌中最大的一种
 

@@ -16,8 +16,12 @@ public enum CardType
     JokerRed,//大王
 }
 
+/// <summary>
+/// 卡牌的权值，值越小表示它在比较关系中越小
+/// </summary>
 public enum CardWeight
 {
+    /// <summary>最小权值，没有对应的牌，作为边界使用</summary>
     wMin,
     w3,
     w4,
@@ -34,6 +38,7 @@ public enum CardWeight
     w2,
     wJokerBlack,
     wJokerRed,
+    /// <summary>最大权值，没有对应的牌，作为边界使用</summary>
     wMax,
 }
 

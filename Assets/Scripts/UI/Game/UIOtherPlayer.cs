@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,7 +49,7 @@ public class UIOtherPlayer : MonoBehaviour
         go.transform.SetParent(cardsTransform);
         SingleCard singleCard = go.GetComponent<SingleCard>();
         singleCard.card = card;
-        singleCard.FaceDown();
+        //singleCard.FaceDown();
 
     }
 
@@ -60,9 +61,32 @@ public class UIOtherPlayer : MonoBehaviour
         }
     }
 
+    public void RemoveCards(Card[] cards)
+    {
+        foreach (Card card in cards)
+        {
+            int index = card.handId;
+            Destroy(cardsTransform.GetChild(index).gameObject);
+        }
+    }
+
     public void ClearCards()
     {
         MyTools.DestroyAllChild(cardsTransform);
     }
 
+    public void StartTimer()
+    {
+        timer.StartTimer(60);
+    }
+
+    public void StopTimer()
+    {
+        timer.StopTimer();
+    }
+
+    public void AddTimeUpListener(Action action)
+    {
+        timer.TimeUp += action;
+    }
 }

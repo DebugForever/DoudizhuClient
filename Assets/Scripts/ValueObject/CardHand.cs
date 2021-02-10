@@ -11,15 +11,14 @@ using System.Threading.Tasks;
 public class CardHand
 {
     #region 成员变量与访问器
-    private List<Card> _cards;
-    private List<Card> cards { get => _cards; set { _cards = value; cacheVaild = false; } }
+    private List<Card> cards;
 
     /// <summary>
     /// 获取全部手牌
     /// </summary>
     public Card[] GetCards() => cards.ToArray();
 
-    public Dictionary<int, int> weightCountDict
+    public SortedDictionary<int, int> weightCountDict
     {
         get
         {
@@ -31,12 +30,15 @@ public class CardHand
             return _weightCountDict;
         }
     }
-    private Dictionary<int, int> _weightCountDict = new Dictionary<int, int>();
-    private bool cacheVaild; //避免每次重新计算_weightCountDict
+    private SortedDictionary<int, int> _weightCountDict = new SortedDictionary<int, int>();
 
-    private Dictionary<int, int> GetWeightCountDict()
+    /// <summary>weightCountDict更新之前，手牌是否变化过</summary>
+    /// <remarks>避免每次重新计算weightCountDict</remarks>
+    private bool cacheVaild;
+
+    private SortedDictionary<int, int> GetWeightCountDict()
     {
-        Dictionary<int, int> dict = new Dictionary<int, int>();
+        SortedDictionary<int, int> dict = new SortedDictionary<int, int>();
         foreach (Card card in cards)
         {
             if (dict.ContainsKey((int)card.weight))
@@ -68,10 +70,13 @@ public class CardHand
 
     public void RemoveCards(Card[] cards)
     {
-        for (int i = 0; i < cards.Length; i++)
+        Card[] cardsClone = cards.Clone() as Card[];
+        Array.Sort(cardsClone, (a, b) => a.handId.CompareTo(b.handId));//handid必须升序才能使用以下算法。
+        for (int i = 0; i < cardsClone.Length; i++)
         {
-            this.cards.RemoveAt(cards[i].handId - i);
+            this.cards.RemoveAt(cardsClone[i].handId - i);
         }
+        ResetHandIds();
     }
 
     public void RemoveCards(int[] cardIndexs)
@@ -80,6 +85,7 @@ public class CardHand
         {
             this.cards.RemoveAt(cardIndexs[i] - i);
         }
+        ResetHandIds();
     }
 
     public void Clear()
@@ -93,6 +99,7 @@ public class CardHand
     /// </summary>
     private void ResetHandIds()
     {
+        cacheVaild = false; //调用这个方法时，手牌发生了变化，所以标记
         for (int i = 0; i < cards.Count; i++)
         {
             cards[i].handId = i;
@@ -289,6 +296,167 @@ public class CardHand
     }
 
     /// <summary>
+    /// 尝试获取一个任意的带其他卡牌的最长的顺子，支持非单顺，仅检测3~A，不检查顺子长度
+    /// </summary>
+    /// <param name="cards">输出获取的卡牌结果</param>
+    /// <param name="length">输出顺子的长度</param>
+    /// <param name="subCardCnt">带几张，不能超过straightRepeat</param>
+    /// <param name="straightRepeat">顺子重复数，比如双顺是2</param>
+    /// <returns>是否获取成功</returns>
+    /// <remarks>
+    /// 这个和TryGetStraightWithSubCards不一样，只能拿顺子（3~A那种的）类型
+    /// 3个out参数因为要构造CardSet，缺少类型
+    /// </remarks>
+    private bool TryGetAnyStraightWithSubCards(out Card[] cards, out int length, out int keyNumber, int subCardCnt, int straightRepeat = 1)
+    {
+        if (straightRepeat <= subCardCnt)
+            throw new ArgumentException("参数错误。subCardCnt应该小于straightRepeat");
+
+
+        cards = null;
+        List<Card> result = new List<Card>();
+        List<int> selectedWeights = new List<int>();
+
+        //寻找顺子部分
+        List<Card> resultTemp = new List<Card>();
+        for (int weight = (int)CardWeight.wA; weight >= (int)CardWeight.w3; weight--)
+        {
+            for (int i = weight; i >= (int)CardWeight.w3; i--)
+            {
+                bool exist = TryGetCards(out Card[] arr, i, straightRepeat);
+                if (!exist)
+                    break;
+                resultTemp.AddRange(arr);
+            }
+
+            if (resultTemp.Count > result.Count)
+                result = resultTemp;
+            else
+                resultTemp.Clear();
+        }
+
+        foreach (Card card in result)
+        {
+            selectedWeights.Add((int)card.weight);
+        }
+        length = selectedWeights.Count;
+
+        if (length == 0)//找不到了
+        {
+            keyNumber = -1;
+            return false;
+        }
+
+        keyNumber = selectedWeights[0];
+
+        //处理被带的卡牌，这些卡牌没有大小要求
+        if (subCardCnt <= 0)//这种是没有带牌的纯顺子
+        {
+            return true;
+        }
+
+        List<(int cnt, int weight)> cntWeightList = new List<(int cnt, int weight)>();
+        foreach (var item in weightCountDict)
+        {
+            cntWeightList.Add((cnt: item.Value, weight: item.Key));
+        }
+        //cnt升序，然后weight升序排，这样得出的结果是较优的（优先带少的小牌）
+        cntWeightList.Sort();
+
+        //都是排好序的，所以直接扫一遍就可以了
+        //顺子有多长，就要带几张
+        for (int i = 0; i < length; i++)
+        {
+            bool ok = false;
+            for (int index = 0; index < cntWeightList.Count; index++)
+            {
+                var item = cntWeightList[index];
+                if (item.cnt > subCardCnt && !selectedWeights.Contains(item.weight))//满足需求并且没有拿过，可以拿这种卡牌
+                {
+                    //这一句实际上不需要，因为顺序扫，并且接下来不会用到selectedWeights
+                    //但是加上保证加代码不出错
+                    selectedWeights.Add(item.weight);
+                    result.AddRange(GetCards(item.weight, subCardCnt));
+                    ok = true;
+                    break;
+                }
+            }
+            if (!ok)
+                return false;
+        }
+        return true;
+    }
+
+
+    /// <summary>
+    /// 尝试获取一个任意的x带y的牌型，y可以为0，优先最小的
+    /// </summary>
+    /// <param name="cards">输出获取的卡牌结果</param>
+    /// <param name="keyNumber">输出获取的关键字（构造CardSet）</param>
+    /// <param name="mainCardCnt">主牌x需要几张</param>
+    /// <param name="subCardCnt">副牌y需要几张</param>
+    /// <returns>是否获取成功</returns>
+    private bool TryGetAnyCardsWithSubCards(out Card[] cards, out int keyNumber, int mainCardCnt, int subCardCnt)
+    {
+        List<Card> cardsResult = new List<Card>();
+        Card[] tempCards;
+        int mainCardWeight = (int)CardWeight.wMin;
+        int subCardWeight = (int)CardWeight.wMin;
+
+        foreach (var pair in weightCountDict)
+        {
+            if (pair.Value >= mainCardCnt)
+            {
+                if (TryGetCards(out tempCards, pair.Key, mainCardCnt))
+                {
+                    cardsResult.AddRange(tempCards);
+                    mainCardWeight = pair.Key;
+                    break;
+                }
+            }
+        }
+
+
+        if (mainCardWeight == (int)CardWeight.wMin) // 找不到主卡
+        {
+            cards = null;
+            keyNumber = -1;
+            return false;
+        }
+
+        keyNumber = mainCardWeight; // 至此，主卡就找到了
+        if (subCardCnt <= 0) // 只判断主卡就行了
+        {
+            cards = cardsResult.ToArray();
+            return true;
+        }
+
+        //同样的办法找副卡
+        foreach (var pair in weightCountDict)
+        {
+            if (pair.Value >= subCardCnt && pair.Key != mainCardWeight)//但是不能和主卡一样
+            {
+                if (TryGetCards(out tempCards, pair.Key, subCardCnt))
+                {
+                    cardsResult.AddRange(tempCards);
+                    break;
+                }
+            }
+        }
+
+        if (subCardWeight == (int)CardWeight.wMin) // 找不到副卡
+        {
+            cards = null;
+            keyNumber = -1;
+            return false;
+        }
+
+        cards = cardsResult.ToArray();
+        return true;
+    }
+
+
+    /// <summary>
     /// 尝试获取一个精确的牌型（精确到第一关键字）
     /// </summary>
     /// <returns>是否获取成功</returns>
@@ -305,12 +473,7 @@ public class CardHand
                 cardSet = CardSet.None;
                 return true;
             case CardSetType.JokerBomb:
-                if (ExistCard((int)CardWeight.wJokerBlack) && ExistCard((int)CardWeight.wJokerRed))
-                {
-                    cardSet = CardSet.JokerBomb;
-                    return true;
-                }
-                return false;
+                return TryGetCardSetJokerBomb(out cardSet);
             case CardSetType.Single:
             case CardSetType.Pair:
             case CardSetType.Triple:
@@ -436,7 +599,7 @@ public class CardHand
         result = null;
         for (int key = prevSet.KeyNumber + 1; key < (int)CardWeight.wMax; key++)
         {
-            if (TryGetExactCardSet(out result, prevSet.SetType, key, prevSet.RepeatCount))
+            if (TryGetExactCardSet(out result, prevSet.Type, key, prevSet.RepeatCount))
                 return true;
         }
         return false;
@@ -458,6 +621,97 @@ public class CardHand
     }
 
     /// <summary>
+    /// 尝试从手牌中获取一个王炸
+    /// </summary>
+    /// <returns>是否成功</returns>
+    private bool TryGetCardSetJokerBomb(out CardSet result)
+    {
+        if (ExistCard((int)CardWeight.wJokerBlack) && ExistCard((int)CardWeight.wJokerRed))
+        {
+            //注意不能直接用CardSet.jokerBomb，因为Card中添加了索引信息，需要从手牌里拿才行
+            Card[] resultCards = new Card[] { GetCards((int)CardWeight.wJokerBlack)[0], GetCards((int)CardWeight.wJokerRed)[0] };
+            result = new CardSet(CardSetType.JokerBomb, (int)CardWeight.wJokerRed, 1, resultCards);
+            return true;
+        }
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// 从手牌中获取一个任意牌型
+    /// 使用情况为先手可出任意牌型
+    /// </summary>
+    /// <remarks>获取牌型的顺序为：顺带类（比如飞机）>顺子类（比如连对）>单带类（比如三带一）>单出类（比如一对）>炸弹>王炸 ，
+    /// 优先获取最小的，顺子优先最长的，非最后一手不出四带二，四带两对。 </remarks>
+    private CardSet GetAnyCardSet()
+    {
+        //如果手里没牌，则无法出牌
+        if (cards.Count <= 0)
+            return CardSet.Invalid;
+
+        //如果一手可出完，则直接返回这个牌型
+        CardSet result = CardSet.GetCardSet(cards.ToArray());
+        if (result.Type != CardSetType.Invalid)
+            return result;
+
+        //否则挨个检测
+        Card[] resultCards;
+        int length;
+        int keyNumber;
+
+
+        #region 顺带类（比如飞机）
+        if (TryGetAnyStraightWithSubCards(out resultCards, out length, out keyNumber, 2, 3))
+            if (length >= CardSet.GetMinRepeat(CardSetType.TripleStraightWithPair)) //不用&&，写成两行清楚些
+                return new CardSet(CardSetType.TripleStraightWithPair, keyNumber, length, resultCards);
+
+        if (TryGetAnyStraightWithSubCards(out resultCards, out length, out keyNumber, 1, 3))
+            if (length >= CardSet.GetMinRepeat(CardSetType.TripleStraightWithOne))
+                return new CardSet(CardSetType.TripleStraightWithOne, keyNumber, length, resultCards);
+        #endregion
+        #region 顺子类（比如连对）
+        if (TryGetAnyStraightWithSubCards(out resultCards, out length, out keyNumber, 0, 3))
+            if (length >= CardSet.GetMinRepeat(CardSetType.TripleStraight))
+                return new CardSet(CardSetType.TripleStraight, keyNumber, length, resultCards);
+
+        if (TryGetAnyStraightWithSubCards(out resultCards, out length, out keyNumber, 0, 2))
+            if (length >= CardSet.GetMinRepeat(CardSetType.DoubleStraight))
+                return new CardSet(CardSetType.DoubleStraight, keyNumber, length, resultCards);
+
+        if (TryGetAnyStraightWithSubCards(out resultCards, out length, out keyNumber, 0, 1))
+            if (length >= CardSet.GetMinRepeat(CardSetType.Straight))
+                return new CardSet(CardSetType.Straight, keyNumber, length, resultCards);
+        #endregion
+        #region 单带类（比如三带一）
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 3, 2))
+            return new CardSet(CardSetType.TripleWithPair, keyNumber, 1, resultCards);
+
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 3, 1))
+            return new CardSet(CardSetType.TripleWithOne, keyNumber, 1, resultCards);
+        #endregion
+        #region 单出类（比如一对）
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 3, 0))
+            return new CardSet(CardSetType.Triple, keyNumber, 1, resultCards);
+
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 2, 0))
+            return new CardSet(CardSetType.Pair, keyNumber, 1, resultCards);
+
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 1, 0))
+            return new CardSet(CardSetType.Single, keyNumber, 1, resultCards);
+        #endregion
+        #region 炸弹
+        if (TryGetAnyCardsWithSubCards(out resultCards, out keyNumber, 4, 0))
+            return new CardSet(CardSetType.Bomb, keyNumber, 1, resultCards);
+        #endregion
+        #region 王炸
+        if (TryGetCardSetJokerBomb(out result))
+            return result;
+        #endregion
+
+        return CardSet.Invalid;
+    }
+
+    /// <summary>
     /// 获取一个可以压住指定牌型的牌型，如果没有则返回牌型Invalid
     /// 这个牌型为较优策略（不会整最优策略）
     /// </summary>
@@ -466,15 +720,19 @@ public class CardHand
     public CardSet GetCardSetGreater(CardSet prevSet)
     {
         CardSet result;
-        if (prevSet.SetType == CardSetType.JokerBomb) //没有比王炸大的牌
+        if (prevSet.Type == CardSetType.JokerBomb) //没有比王炸大的牌
             return CardSet.Invalid;
-        else if (prevSet.SetType == CardSetType.Bomb) //只有炸弹和王炸比炸弹大
+        else if (prevSet.Type == CardSetType.Bomb) //只有炸弹和王炸比炸弹大
         {
             if (TryGetCardSetBomb(out result, prevSet.KeyNumber + 1))
                 return result;
 
-            if (TryGetExactCardSet(out result, CardSetType.JokerBomb, 0, 0))//王炸不需要后两个参数
+            if (TryGetCardSetJokerBomb(out result))
                 return result;
+        }
+        else if (prevSet.Type == CardSetType.None) //此时可以任意出牌
+        {
+            return GetAnyCardSet();
         }
         else //普通牌型，从小往大判断
         {

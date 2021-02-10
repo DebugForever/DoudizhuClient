@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -113,8 +114,36 @@ public class UIMainPlayer : MonoBehaviour
         }
     }
 
+    public void RemoveCards(Card[] cards)
+    {
+        Card[] cardsClone = cards.Clone() as Card[];
+        Array.Sort(cardsClone, (a, b) => a.handId.CompareTo(b.handId));//handid必须升序才能使用以下算法。
+        for (int i = 0; i < cards.Length; i++)
+        {
+            Card card = cards[i];
+            int index = card.handId;
+            this.cards.RemoveAt(index - i);//删除会导致元素位置改变，所以要调整index
+            Destroy(cardsTransform.GetChild(index).gameObject);//Destroy不会立即执行，所以不用调整index
+        }
+    }
+
     public void ClearCards()
     {
         MyTools.DestroyAllChild(cardsTransform);
+    }
+
+    public void StartTimer()
+    {
+        timer.StartTimer(60);
+    }
+
+    public void StopTimer()
+    {
+        timer.StopTimer();
+    }
+
+    public void AddTimeUpListener(Action action)
+    {
+        timer.TimeUp += action;
     }
 }

@@ -78,7 +78,7 @@ public class EventCenter
 
         if (eventMap[eventType] != null && callback.GetType() != eventMap[eventType].GetType())
         {
-            throw new ArgumentException("callback type mismatch!");
+            throw new ArgumentException("callback type mismatch!");//添加的回调类型不一致
         }
     }
     private static void AfterRemoveListener(EventType eventType)
