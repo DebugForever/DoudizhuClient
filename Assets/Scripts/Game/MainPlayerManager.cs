@@ -3,25 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
 
-public class MainPlayerManager : MonoBehaviour
+public class MainPlayerManager : PlayerManagerBase
 {
-    private UIMainPlayer view;
-    private GameManagerOffline gameManager;
-
-    /// <summary>
-    /// 当前手牌的引用，所有手牌存放在CardManager里
-    /// 需要取出一个引用
-    /// </summary>
-    private CardHand cardHand;
-
-    /// <summary>
-    /// 自己也维护一个回合进行中状态的变量，
-    /// 避免不在自己的回合时接收消息
-    /// </summary>
-    private bool isMyTurn = false;
-
-    private int playerIndex;
-
+    private new UIMainPlayer view;
 
     public void Init(CardHand cardHand)
     {
@@ -29,9 +13,10 @@ public class MainPlayerManager : MonoBehaviour
         this.playerIndex = 1;
     }
 
-    private void Awake()
+    protected override void Awake()
     {
         view = GetComponentInChildren<UIMainPlayer>();
+        base.view = view;//base.view 是没有赋值的
         gameManager = GetComponentInParent<GameManagerOffline>();
 
         //注意每一个玩家出牌，所有玩家都会收到这个事件，但是只有1个玩家需要相应这个事件
@@ -44,31 +29,6 @@ public class MainPlayerManager : MonoBehaviour
     {
         EventCenter.RemoveListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.RemoveListener(EventType.PassTurn, PassTurn);
-    }
-
-    private void Start()
-    {
-        view.AddTimeUpListener(EndTurn);
-    }
-
-    public void StartTurn()
-    {
-        view.StartTimer();
-        isMyTurn = true;
-    }
-
-    private void EndTurn()
-    {
-        gameManager.EndTurn();
-        view.StopTimer();
-        isMyTurn = false;
-    }
-
-    private void PassTurn()
-    {
-        gameManager.EndTurnPass();
-        view.StopTimer();
-        isMyTurn = false;
     }
 
     /// <summary>

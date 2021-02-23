@@ -4,24 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIMainPlayer : MonoBehaviour
+public class UIMainPlayer : UIPlayerBase
 {
     // === auto generated code begin === 
     private UnityEngine.UI.Text ratioText;
-    private UnityEngine.UI.Text coinText;
-    private UnityEngine.UI.Text usernameText;
     // === auto generated code end === 
-    private Transform cardsTransform;
-    private Image headIconImage;
-    private UITimer timer;
     private List<MainPlayerCard> cards = new List<MainPlayerCard>();
 
-    private int _coin;
     private int _ratio;
 
-
-
-    private void Awake()
+    protected override void Awake()
     {
         // === auto generated code begin === 
         usernameText = transform.Find("UsernamePanel/UsernameText").GetComponent<UnityEngine.UI.Text>();
@@ -33,26 +25,28 @@ public class UIMainPlayer : MonoBehaviour
         timer = transform.Find("Timer").GetComponent<UITimer>();
     }
 
-    public string username
+    public override void AddCard(Card card)
     {
-        get => usernameText.text; set => usernameText.text = value;
+        GameObject go = Instantiate(ResourceManager.GetMainPlayerCardPrefab());
+        go.transform.SetParent(cardsTransform);
+        MainPlayerCard mainPlayerCard = go.GetComponent<MainPlayerCard>();
+        mainPlayerCard.card = card;
+        cards.Add(mainPlayerCard);
     }
 
-    public int coin
+    public override void RemoveCards(Card[] cards)
     {
-        get => _coin; set { _coin = value; coinText.text = _coin.ToString(); }
+        Card[] cardsClone = cards.Clone() as Card[];
+        Array.Sort(cardsClone, (a, b) => a.handId.CompareTo(b.handId));//handid必须升序才能使用以下算法。
+        for (int i = 0; i < cards.Length; i++)
+        {
+            Card card = cards[i];
+            int index = card.handId;
+            this.cards.RemoveAt(index - i);//删除会导致元素位置改变，所以要调整index
+            Destroy(cardsTransform.GetChild(index).gameObject);//Destroy不会立即执行，所以不用调整index
+        }
     }
 
-    public int ratio
-    {
-        get => _ratio; set { _ratio = value; ratioText.text = _ratio.ToString(); }
-    }
-
-    public Sprite headIcon
-    {
-        get => headIconImage.sprite;
-        set => headIconImage.sprite = value;
-    }
 
     public int[] GetSelectedCardsId()
     {
@@ -95,55 +89,5 @@ public class UIMainPlayer : MonoBehaviour
         {
             mainPlayerCard.Unselect();
         }
-    }
-
-    public void AddCard(Card card)
-    {
-        GameObject go = Instantiate(ResourceManager.GetMainPlayerCardPrefab());
-        go.transform.SetParent(cardsTransform);
-        MainPlayerCard mainPlayerCard = go.GetComponent<MainPlayerCard>();
-        mainPlayerCard.card = card;
-        cards.Add(mainPlayerCard);
-    }
-
-    public void AddCards(Card[] cards)
-    {
-        foreach (Card card in cards)
-        {
-            AddCard(card);
-        }
-    }
-
-    public void RemoveCards(Card[] cards)
-    {
-        Card[] cardsClone = cards.Clone() as Card[];
-        Array.Sort(cardsClone, (a, b) => a.handId.CompareTo(b.handId));//handid必须升序才能使用以下算法。
-        for (int i = 0; i < cards.Length; i++)
-        {
-            Card card = cards[i];
-            int index = card.handId;
-            this.cards.RemoveAt(index - i);//删除会导致元素位置改变，所以要调整index
-            Destroy(cardsTransform.GetChild(index).gameObject);//Destroy不会立即执行，所以不用调整index
-        }
-    }
-
-    public void ClearCards()
-    {
-        MyTools.DestroyAllChild(cardsTransform);
-    }
-
-    public void StartTimer()
-    {
-        timer.StartTimer(60);
-    }
-
-    public void StopTimer()
-    {
-        timer.StopTimer();
-    }
-
-    public void AddTimeUpListener(Action action)
-    {
-        timer.TimeUp += action;
     }
 }
