@@ -15,6 +15,7 @@ public class UIOtherPlayer : UIPlayerBase
         cardsTransform = transform.Find("Cards");
         headIconImage = transform.Find("InfoPanel/HeadIcon/HeadIconMask/HeadIconImage").GetComponent<Image>();
         timer = transform.Find("Timer").GetComponent<UITimer>();
+        passTurnText = transform.Find("PassTurnText").GetComponent<Text>();
     }
 
 }

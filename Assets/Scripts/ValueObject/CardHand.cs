@@ -17,6 +17,7 @@ public class CardHand
     /// 获取全部手牌
     /// </summary>
     public Card[] GetCards() => cards.ToArray();
+    public int CardCount => cards.Count;
 
     public SortedDictionary<int, int> weightCountDict
     {
@@ -439,6 +440,7 @@ public class CardHand
                 if (TryGetCards(out tempCards, pair.Key, subCardCnt))
                 {
                     cardsResult.AddRange(tempCards);
+                    subCardWeight = pair.Key;
                     break;
                 }
             }

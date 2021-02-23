@@ -23,12 +23,45 @@ public class MainPlayerManager : PlayerManagerBase
         //这个没有办法优化，因为这是解耦的必要开销。除非每个玩家出牌都使用不同的事件（这显然不行）。
         EventCenter.AddListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.AddListener(EventType.PassTurn, PassTurn);
+        EventCenter.AddListener(EventType.PlayCardHint, HintCards);
     }
 
     private void OnDestroy()
     {
         EventCenter.RemoveListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.RemoveListener(EventType.PassTurn, PassTurn);
+        EventCenter.RemoveListener(EventType.PlayCardHint, HintCards);
+
+    }
+
+    protected override void EndTurnPlayCard()
+    {
+        base.EndTurnPlayCard();
+        view.DisableButtons();
+    }
+
+    protected override void PassTurn()
+    {
+        base.PassTurn();
+        view.UnselectAllCard();
+        view.DisableButtons();
+    }
+
+    public override void StartTurn()
+    {
+        base.StartTurn();
+        view.EnableButtons();
+    }
+
+    private void FixedUpdate()
+    {
+        if (IsAI && isMyTurn)
+        {
+            if (ai == null)
+                ai = new AIPlayer(cardHand);
+            CardSet cardSet = ai.PlayCard(CardManager.LastHand);
+            PlayCard(cardSet);
+        }
     }
 
     /// <summary>
@@ -49,8 +82,8 @@ public class MainPlayerManager : PlayerManagerBase
             return;
         }
 
-        print(CardSet.GetCardSet(cards));
         CardSet cardSet = CardSet.GetCardSet(cards);
+        Debug.LogFormat("main player cardset:{0}", cardSet);
         if (cardSet.Type == CardSetType.Invalid)
         {
             EventCenter.BroadCast(EventType.UIFlashHint, "无效的组合");
@@ -63,11 +96,34 @@ public class MainPlayerManager : PlayerManagerBase
         }
         else //合法的出牌
         {
-            view.RemoveSelectedCards();
-            view.UnselectAllCard();
-
-            EventCenter.BroadCast(EventType.PlayerPlayCard, CardSet.GetCardSet(cards));
-            EndTurn();
+            PlayCard(cardSet);
         }
+    }
+
+    private void PlayCard(CardSet cardSet)
+    {
+        //view.RemoveSelectedCards();
+        view.RemoveCards(cardSet.Cards);
+        view.UnselectAllCard();
+
+        cardHand.RemoveCards(cardSet.Cards);
+        EventCenter.BroadCast(EventType.PlayerPlayCard, cardSet);
+        EndTurnPlayCard();
+    }
+
+    private void HintCards()
+    {
+        if (!isMyTurn)
+        {
+            return;
+        }
+        CardSet hintSet = cardHand.GetCardSetGreater(CardManager.LastHand);
+        if (hintSet.Type == CardSetType.Invalid)
+        {
+            EventCenter.BroadCast(EventType.UIFlashHint, "没有可出的牌");
+            PassTurn();
+            return;
+        }
+        view.SelectCards(hintSet.Cards);
     }
 }

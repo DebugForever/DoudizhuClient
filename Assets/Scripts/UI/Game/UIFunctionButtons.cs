@@ -24,4 +24,18 @@ public class UIFunctionButtons : MonoBehaviour
         hintButton.onClick.AddListener(() => { EventCenter.BroadCast(EventType.PlayCardHint); });
 
     }
+
+    public void DisableButtons()
+    {
+        noButton.interactable = false;
+        yesButton.interactable = false;
+        hintButton.interactable = false;
+    }
+
+    public void EnableButtons()
+    {
+        noButton.interactable = true;
+        yesButton.interactable = true;
+        hintButton.interactable = true;
+    }
 }

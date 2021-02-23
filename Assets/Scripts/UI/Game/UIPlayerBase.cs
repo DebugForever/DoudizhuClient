@@ -14,10 +14,23 @@ public class UIPlayerBase : MonoBehaviour
     protected Image headIconImage;
     protected UITimer timer;
     protected int _coin;
+    protected Text passTurnText;
 
-    protected virtual void Awake()
+    protected virtual void Awake() //在Awake里完成变量初始化
     {
         
+    }
+
+    protected virtual void Start()
+    {
+        HidePassTurnText();
+    }
+
+    public virtual void MatchReset()
+    {
+        HidePassTurnText();
+        StopTimer();
+        ClearCards();
     }
 
     public string username
@@ -80,5 +93,15 @@ public class UIPlayerBase : MonoBehaviour
     public void AddTimeUpListener(Action action)
     {
         timer.TimeUp += action;
+    }
+
+    public void ShowPassTurnText()
+    {
+        passTurnText.gameObject.SetActive(true);
+    }
+
+    public void HidePassTurnText()
+    {
+        passTurnText.gameObject.SetActive(false);
     }
 }

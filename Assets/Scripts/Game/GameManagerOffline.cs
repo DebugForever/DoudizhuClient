@@ -15,19 +15,19 @@ public class GameManagerOffline : MonoBehaviour
     private int currentPlayer = 1;
     private bool turnStarted = false;
     private bool turnEnded = true;
+    private bool turnEnabled = false;
 
     /// <summary>连续不出的人数，为2则代表没人压牌，可以自己任意出</summary>
     private int passCount = 0;
 
     /// <summary>
-    /// 结束回合
+    /// 出牌结束回合
     /// </summary>
-    public void EndTurn()
+    public void EndTurnPlayCard()
     {
         if (turnStarted)
         {
-            turnEnded = true;
-            turnStarted = false;
+            EndTurnCommon();
             passCount = 0;
         }
     }
@@ -39,13 +39,58 @@ public class GameManagerOffline : MonoBehaviour
     {
         if (turnStarted)
         {
-            turnEnded = true;
-            turnStarted = false;
+            EndTurnCommon();
             passCount += 1;
             if (passCount >= 2)//没人压牌，直接替换为None牌型
             {
                 CardManager.SetLastHand(CardSet.None);
             }
+        }
+    }
+
+    /// <summary>
+    /// 结束回合共同的代码
+    /// </summary>
+    private void EndTurnCommon()
+    {
+        turnEnded = true;
+        turnStarted = false;
+        if (GetCurrentPlayerManager().GetRemainCardCount() == 0)
+        {
+            MatchOver();
+        }
+
+        currentPlayer += 1;
+        if (currentPlayer > 3)
+            currentPlayer = 1;
+    }
+
+    private void MatchOver()
+    {
+        GamePause();//游戏结束时需要暂停现有的计时等游戏功能
+        EventCenter.BroadCast(EventType.MatchOver);
+    }
+
+    private void GamePause()
+    {
+        //最简单粗暴的暂停方法：时停
+        //显然会有问题，比如动画放不了，update全部失效，先整一个凑合着用吧
+        //Time.timeScale = 0f;
+        turnEnabled = false;
+    }
+
+    private PlayerManagerBase GetCurrentPlayerManager()
+    {
+        switch (currentPlayer)
+        {
+            case 1:
+                return p1Manager;
+            case 2:
+                return p2Manager;
+            case 3:
+                return p3Manager;
+            default:
+                return null;
         }
     }
 
@@ -62,7 +107,9 @@ public class GameManagerOffline : MonoBehaviour
 
         EventCenter.AddListener(EventType.TestEvent, Test);
         EventCenter.AddListener<CardSet>(EventType.PlayerPlayCard, PlayerPlayCard);
-        EventCenter.AddListener(EventType.PlayCardHint, PlayCardHint);
+        EventCenter.AddListener(EventType.MatchExit, ReturnToLobby);
+        EventCenter.AddListener(EventType.MatchReset, MatchReset);
+        EventCenter.AddListener(EventType.DealCardOver, DealCardOver);
 
         CardManager.SetLastHand(CardSet.None);
     }
@@ -71,18 +118,19 @@ public class GameManagerOffline : MonoBehaviour
     {
         EventCenter.RemoveListener(EventType.TestEvent, Test);
         EventCenter.RemoveListener<CardSet>(EventType.PlayerPlayCard, PlayerPlayCard);
-        EventCenter.RemoveListener(EventType.PlayCardHint, PlayCardHint);
+        EventCenter.RemoveListener(EventType.MatchExit, ReturnToLobby);
+        EventCenter.RemoveListener(EventType.MatchReset, MatchReset);
+        EventCenter.RemoveListener(EventType.DealCardOver, DealCardOver);
+
     }
 
     private void FixedUpdate()
     {
-        if (!turnStarted && turnEnded)
-        {
-            StartTurn();
-            currentPlayer += 1;
-            if (currentPlayer > 3)
-                currentPlayer = 1;
-        }
+        if (turnEnabled)
+            if (!turnStarted && turnEnded)
+            {
+                StartTurn();
+            }
     }
 
     /// <summary>
@@ -118,15 +166,38 @@ public class GameManagerOffline : MonoBehaviour
     }
 
 
-
-    private void PlayCardHint()
-    {
-        EventCenter.BroadCast(EventType.UIFlashHint, "提示功能还没做。。。");
-    }
-
     private void PlayerPlayCard(CardSet cardSet)
     {
         view.lastHandCards.ClearCards();
         view.lastHandCards.SetCards(cardSet.Cards);
+    }
+
+    /// <summary>
+    /// 开始一局新游戏
+    /// </summary>
+    private void MatchReset()
+    {
+        view.MatchReset();
+        p1Manager.MatchReset();
+        p2Manager.MatchReset();
+        p3Manager.MatchReset();
+
+        currentPlayer = 1;
+        turnStarted = false;
+        turnEnded = true;
+        turnEnabled = false;
+        passCount = 0;
+
+        CardManager.SetLastHand(CardSet.None);
+    }
+
+    private void ReturnToLobby()
+    {
+        LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.lobby);
+    }
+
+    private void DealCardOver()
+    {
+        turnEnabled = true;
     }
 }

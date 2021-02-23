@@ -9,6 +9,7 @@ public class UIMainPlayer : UIPlayerBase
     // === auto generated code begin === 
     private UnityEngine.UI.Text ratioText;
     // === auto generated code end === 
+    private UIFunctionButtons functionButtons;
     private List<MainPlayerCard> cards = new List<MainPlayerCard>();
 
     private int _ratio;
@@ -22,7 +23,9 @@ public class UIMainPlayer : UIPlayerBase
         // === auto generated code end === 
         cardsTransform = transform.Find("Cards");
         headIconImage = transform.Find("HeadIcon/HeadIconMask/HeadIconImage").GetComponent<Image>();
+        passTurnText = transform.Find("PassTurnText").GetComponent<Text>();
         timer = transform.Find("Timer").GetComponent<UITimer>();
+        functionButtons = transform.Find("FunctionButtons").GetComponent<UIFunctionButtons>();
     }
 
     public override void AddCard(Card card)
@@ -47,6 +50,14 @@ public class UIMainPlayer : UIPlayerBase
         }
     }
 
+    public void SelectCards(Card[] cards)
+    {
+        foreach (Card card in cards)
+        {
+            int index = card.handId;
+            this.cards[index].Select();
+        }
+    }
 
     public int[] GetSelectedCardsId()
     {
@@ -89,5 +100,15 @@ public class UIMainPlayer : UIPlayerBase
         {
             mainPlayerCard.Unselect();
         }
+    }
+
+    public void EnableButtons()
+    {
+        functionButtons.EnableButtons();
+    }
+
+    public void DisableButtons()
+    {
+        functionButtons.DisableButtons();
     }
 }

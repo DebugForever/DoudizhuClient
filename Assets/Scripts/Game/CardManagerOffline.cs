@@ -70,7 +70,7 @@ public static class CardManagerOffline
             EventCenter.BroadCast(EventType.Player3AddCards, Player3Cards.Skip(i).Take(takeCount).ToArray());
             yield return new WaitForSeconds(0.2f);
         }
-
+        EventCenter.BroadCast(EventType.DealCardOver);
     }
 
     private static void CleanCards()

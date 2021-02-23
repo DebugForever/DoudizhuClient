@@ -34,4 +34,12 @@
     PlayerPlayCard,
     ///<summary>玩家出牌超时</summary>
     PlayerTimeUp,
+    ///<summary>重开按钮</summary>
+    MatchReset,
+    ///<summary>退出按钮</summary>
+    MatchExit,
+    ///<summary>一局游戏结束</summary>
+    MatchOver,
+    ///<summary>发牌结束</summary>
+    DealCardOver,
 }

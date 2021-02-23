@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
 
 public class PlayerManagerBase : MonoBehaviour
 {
-    protected UIPlayerBase view;
+    [NonSerialized] protected UIPlayerBase view;//[NonSerialized]用于解决unity重复序列化报错，但是不知道能不能解决。
     protected GameManagerOffline gameManager;
 
     /// <summary>
@@ -24,11 +25,14 @@ public class PlayerManagerBase : MonoBehaviour
 
     protected AIPlayer ai;
 
+    [SerializeField]
+    private bool _isAI = true;
+
     /// <summary>
     /// 这个玩家目前是否由电脑操控
     /// 可随时更改
     /// </summary>
-    public bool IsAI { get; set; } = true;
+    public bool IsAI { get => _isAI; set => _isAI = value; }
 
     /// <summary>
     /// 这个类需要在外部初始化后才能使用
@@ -43,6 +47,10 @@ public class PlayerManagerBase : MonoBehaviour
         this.ai = new AIPlayer(cardHand);
     }
 
+    public virtual void MatchReset()
+    {
+        cardHand.Clear();
+    }
 
     protected virtual void Awake()
     {
@@ -51,7 +59,7 @@ public class PlayerManagerBase : MonoBehaviour
 
     protected void Start()
     {
-        view.AddTimeUpListener(EndTurn);
+        view.AddTimeUpListener(EndTurnPlayCard);
     }
 
     public virtual void StartTurn()
@@ -59,12 +67,13 @@ public class PlayerManagerBase : MonoBehaviour
         Debug.LogFormat("player{0} turn started", playerIndex);
         view.StartTimer();
         isMyTurn = true;
+        view.HidePassTurnText();
     }
 
-    protected virtual void EndTurn()
+    protected virtual void EndTurnPlayCard()
     {
         view.StopTimer();
-        gameManager.EndTurn();
+        gameManager.EndTurnPlayCard();
         isMyTurn = false;
     }
 
@@ -74,5 +83,11 @@ public class PlayerManagerBase : MonoBehaviour
         view.StopTimer();
         gameManager.EndTurnPass();
         isMyTurn = false;
+        view.ShowPassTurnText();
+    }
+
+    public int GetRemainCardCount()
+    {
+        return cardHand.CardCount;
     }
 }

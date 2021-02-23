@@ -10,6 +10,7 @@ public class GameView : MonoBehaviour
     public UIOtherPlayer player2View { get; private set; }
     public UIOtherPlayer player3View { get; private set; }
     public UILastHandCards lastHandCards { get; private set; }
+    public UIResultPanel resultPanel { get; private set; }
 
     private void Awake()
     {
@@ -17,6 +18,7 @@ public class GameView : MonoBehaviour
         player2View = transform.Find("Player2").GetComponent<UIOtherPlayer>();
         player3View = transform.Find("Player3").GetComponent<UIOtherPlayer>();
         lastHandCards = transform.Find("LastHandCards").GetComponent<UILastHandCards>();
+        resultPanel = transform.Find("ResultPanel").GetComponent<UIResultPanel>();
 
         EventCenter.AddListener<Card[]>(EventType.MainPlayerAddCards, MainPlayerAddCards);
         EventCenter.AddListener<Card[]>(EventType.Player2AddCards, Player2AddCards);
@@ -31,6 +33,7 @@ public class GameView : MonoBehaviour
     private void Start()
     {
         Init();
+        resultPanel.HideNoAnim();
     }
 
     private void OnDestroy()
@@ -42,6 +45,14 @@ public class GameView : MonoBehaviour
         mainPlayerView.ClearCards();
         player2View.ClearCards();
         player3View.ClearCards();
+    }
+
+    public void MatchReset()
+    {
+        mainPlayerView.MatchReset();
+        player2View.MatchReset();
+        player3View.MatchReset();
+        lastHandCards.ClearCards();
     }
 
     private void MainPlayerAddCards(Card[] cards)
