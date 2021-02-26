@@ -23,7 +23,8 @@ public class SingleCard : MonoBehaviour
         set
         {
             _card = value;
-            image.sprite = _card.GetSprite();
+            if (!isBack)//如果是背面，则不需要替换图片
+                image.sprite = _card.GetSprite();
         }
     }
 

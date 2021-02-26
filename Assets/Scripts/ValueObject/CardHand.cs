@@ -122,7 +122,13 @@ public class CardHand
         ResetHandIds();
     }
 
-
+    public int GetCardCount(CardWeight weight)
+    {
+        if (weightCountDict.TryGetValue((int)(weight), out int count))
+            return count;
+        else
+            return 0;
+    }
     #endregion
     #region 获取牌型
     /// <summary>
@@ -749,6 +755,18 @@ public class CardHand
         }
 
         return CardSet.Invalid;
+    }
+
+    /// <summary>
+    /// 计算手牌评分，用于抢地主
+    /// </summary>
+    /// <remarks>目前是最简单方法，只看双王和2</remarks>
+    public int GetCardHandScore()
+    {
+        int jokerB = GetCardCount(CardWeight.wJokerBlack);
+        int jokerR = GetCardCount(CardWeight.wJokerRed);
+        int card2 = GetCardCount(CardWeight.w2);
+        return jokerB * 3 + jokerR * 4 + card2 * 2;
     }
 
     #endregion

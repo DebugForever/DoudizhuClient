@@ -18,6 +18,10 @@
     PassTurn,
     ///<summary>提示按钮</summary>
     PlayCardHint,
+    ///<summary>抢地主按钮</summary>
+    GrabLandlord,
+    ///<summary>不抢按钮</summary>
+    NoGrabLandlord,
     ///<summary>给主玩家添加一些牌</summary>
     MainPlayerAddCards,
     ///<summary>给玩家2添加一些牌</summary>
@@ -30,6 +34,8 @@
     Player2RemoveCards,
     ///<summary>删除玩家3一些牌</summary>
     Player3RemoveCards,
+    ///<summary>设置底牌</summary>
+    SetUnder3Cards,
     ///<summary>任意玩家出牌</summary>
     PlayerPlayCard,
     ///<summary>玩家出牌超时</summary>

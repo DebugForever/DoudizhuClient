@@ -16,13 +16,16 @@ public class OtherPlayerManager : PlayerManagerBase
     }
 
 
-    public override void StartTurn()
+    public override void StartTurn(TurnType turnType)
     {
-        base.StartTurn();
-        StartCoroutine(WaitPlayCard());
+        base.StartTurn(turnType);
+        if (turnType == TurnType.PlayCard)
+            StartCoroutine(WaitPlayCardCoroutine());
+        else if (turnType == TurnType.GarbLandlord)
+            StartCoroutine(WaitGrabLandlordCoroutine());
     }
 
-    private IEnumerator WaitPlayCard()
+    private IEnumerator WaitPlayCardCoroutine()
     {
         if (IsAI)
         {
@@ -47,5 +50,19 @@ public class OtherPlayerManager : PlayerManagerBase
             PassTurn();
         }
 
+    }
+
+    private IEnumerator WaitGrabLandlordCoroutine()
+    {
+        if (IsAI)
+        {
+            yield return new WaitForSeconds(AiDelay);
+            EndTurnGrabLandlord(ai.GrabLandlord());
+        }
+        else
+        {
+            yield return new WaitForSeconds(AiDelay);
+            EndTurnGrabLandlord(false);
+        }
     }
 }

@@ -11,6 +11,8 @@ public class GameView : MonoBehaviour
     public UIOtherPlayer player3View { get; private set; }
     public UILastHandCards lastHandCards { get; private set; }
     public UIResultPanel resultPanel { get; private set; }
+    public UIUnder3Cards under3Cards { get; private set; }
+
 
     private void Awake()
     {
@@ -19,6 +21,7 @@ public class GameView : MonoBehaviour
         player3View = transform.Find("Player3").GetComponent<UIOtherPlayer>();
         lastHandCards = transform.Find("LastHandCards").GetComponent<UILastHandCards>();
         resultPanel = transform.Find("ResultPanel").GetComponent<UIResultPanel>();
+        under3Cards = transform.Find("Under3Cards").GetComponent<UIUnder3Cards>();
 
         EventCenter.AddListener<Card[]>(EventType.MainPlayerAddCards, MainPlayerAddCards);
         EventCenter.AddListener<Card[]>(EventType.Player2AddCards, Player2AddCards);
@@ -38,6 +41,12 @@ public class GameView : MonoBehaviour
 
     private void OnDestroy()
     {
+        EventCenter.RemoveListener<Card[]>(EventType.MainPlayerAddCards, MainPlayerAddCards);
+        EventCenter.RemoveListener<Card[]>(EventType.Player2AddCards, Player2AddCards);
+        EventCenter.RemoveListener<Card[]>(EventType.Player3AddCards, Player3AddCards);
+        EventCenter.RemoveListener<Card[]>(EventType.MainPlayerRemoveCards, MainPlayerRemoveCards);
+        EventCenter.RemoveListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
+        EventCenter.RemoveListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
     }
 
     private void Init()
@@ -53,6 +62,7 @@ public class GameView : MonoBehaviour
         player2View.MatchReset();
         player3View.MatchReset();
         lastHandCards.ClearCards();
+        under3Cards.MatchReset();
     }
 
     private void MainPlayerAddCards(Card[] cards)

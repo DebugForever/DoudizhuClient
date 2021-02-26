@@ -16,12 +16,43 @@ public class GameManagerOffline : MonoBehaviour
     private bool turnStarted = false;
     private bool turnEnded = true;
     private bool turnEnabled = false;
+    private int noGrabLandlordPlayerCount = 0;
+    private int grabLandlordPlayerCount = 0;
+    private int lastGrabLandlordPlayer = 0;
+    /// <summary>第一个开始回合（抢地主）的是谁</summary>
+    private int startPlayer = 1;
+    /// <summary>上局游戏谁赢了</summary>
+    private int lastWinner = 1;
+    private int landlordPlayer = 0;
 
     /// <summary>连续不出的人数，为2则代表没人压牌，可以自己任意出</summary>
     private int passCount = 0;
 
+
     /// <summary>
-    /// 出牌结束回合
+    /// 一名玩家的回合
+    /// </summary>
+    private void StartTurn(TurnType turnType)
+    {
+        if (currentPlayer == 1)
+        {
+            turnStarted = true;
+            p1Manager.StartTurn(turnType);
+        }
+        else if (currentPlayer == 2)
+        {
+            turnStarted = true;
+            p2Manager.StartTurn(turnType);
+        }
+        else if (currentPlayer == 3)
+        {
+            turnStarted = true;
+            p3Manager.StartTurn(turnType);
+        }
+    }
+
+    /// <summary>
+    /// 出牌结束回合，其他类使用
     /// </summary>
     public void EndTurnPlayCard()
     {
@@ -33,7 +64,7 @@ public class GameManagerOffline : MonoBehaviour
     }
 
     /// <summary>
-    /// 不出牌结束回合
+    /// 不出牌结束回合，其他类使用
     /// </summary>
     public void EndTurnPass()
     {
@@ -46,6 +77,63 @@ public class GameManagerOffline : MonoBehaviour
                 CardManager.SetLastHand(CardSet.None);
             }
         }
+    }
+
+    //improve 重构抢地主，这里写的很丑
+    public void EndTurnGrabLandlord(bool isGrab)
+    {
+        if (turnStarted)
+        {
+            if (isGrab)
+            {
+                lastGrabLandlordPlayer = currentPlayer;
+                grabLandlordPlayerCount += 1;
+            }
+            else
+            {
+                noGrabLandlordPlayerCount += 1;
+            }
+
+            //两个人不抢，抢地主的人当地主
+            if (noGrabLandlordPlayerCount >= 2 && lastGrabLandlordPlayer != 0)
+            {
+                GetPlayerManager(lastGrabLandlordPlayer).BecomeLandlord();
+                landlordPlayer = lastGrabLandlordPlayer;
+                GrabLandlordOver();
+                return;
+            }
+
+            //大于等于两个人抢地主，先手玩家有一次额外抢地主的机会
+            if (grabLandlordPlayerCount >= 2 && currentPlayer == startPlayer)
+            {
+                if (isGrab)
+                {
+                    GetCurrentPlayerManager().BecomeLandlord();
+                    landlordPlayer = currentPlayer;
+                }
+                else
+                {
+                    GetPlayerManager(lastGrabLandlordPlayer).BecomeLandlord();
+                    landlordPlayer = lastGrabLandlordPlayer;
+                }
+                GrabLandlordOver();
+                return;
+            }
+
+            EndTurnCommon();
+        }
+    }
+
+    /// <summary>
+    /// 结束抢地主阶段
+    /// </summary>
+    private void GrabLandlordOver()
+    {
+        view.under3Cards.CardsFaceUp();
+        currentPlayer = landlordPlayer;
+        CardManager.GiveUnderCards(landlordPlayer);
+        turnEnded = true;
+        turnStarted = false;
     }
 
     /// <summary>
@@ -68,20 +156,23 @@ public class GameManagerOffline : MonoBehaviour
     private void MatchOver()
     {
         GamePause();//游戏结束时需要暂停现有的计时等游戏功能
+        lastWinner = currentPlayer;
         EventCenter.BroadCast(EventType.MatchOver);
     }
 
     private void GamePause()
     {
-        //最简单粗暴的暂停方法：时停
-        //显然会有问题，比如动画放不了，update全部失效，先整一个凑合着用吧
-        //Time.timeScale = 0f;
         turnEnabled = false;
     }
 
     private PlayerManagerBase GetCurrentPlayerManager()
     {
-        switch (currentPlayer)
+        return GetPlayerManager(currentPlayer);
+    }
+
+    private PlayerManagerBase GetPlayerManager(int playerIndex)
+    {
+        switch (playerIndex)
         {
             case 1:
                 return p1Manager;
@@ -93,7 +184,6 @@ public class GameManagerOffline : MonoBehaviour
                 return null;
         }
     }
-
 
     void Awake()
     {
@@ -112,6 +202,8 @@ public class GameManagerOffline : MonoBehaviour
         EventCenter.AddListener(EventType.DealCardOver, DealCardOver);
 
         CardManager.SetLastHand(CardSet.None);
+
+        StartDealCard();
     }
 
     private void OnDestroy()
@@ -124,45 +216,21 @@ public class GameManagerOffline : MonoBehaviour
 
     }
 
+    private void Test()
+    {
+        MatchReset();
+    }
+
     private void FixedUpdate()
     {
         if (turnEnabled)
             if (!turnStarted && turnEnded)
             {
-                StartTurn();
+                if (landlordPlayer == 0)
+                    StartTurn(TurnType.GarbLandlord);
+                else
+                    StartTurn(TurnType.PlayCard);
             }
-    }
-
-    /// <summary>
-    /// 一名玩家的回合
-    /// </summary>
-    private void StartTurn()
-    {
-        //回合开始，开协程计时60
-        //等待出牌或者计时结束
-        //出牌 - 终止协程
-        //计时结束 - 自动不出，先手则自动选择出牌
-        //下一回合
-        if (currentPlayer == 1)
-        {
-            p1Manager.StartTurn();
-            turnStarted = true;
-        }
-        else if (currentPlayer == 2)
-        {
-            p2Manager.StartTurn();
-            turnStarted = true;
-        }
-        else if (currentPlayer == 3)
-        {
-            p3Manager.StartTurn();
-            turnStarted = true;
-        }
-    }
-
-    private void Test()
-    {
-        StartCoroutine(CardManager.DealCardCoroutine());
     }
 
 
@@ -182,18 +250,30 @@ public class GameManagerOffline : MonoBehaviour
         p2Manager.MatchReset();
         p3Manager.MatchReset();
 
-        currentPlayer = 1;
+
         turnStarted = false;
         turnEnded = true;
         turnEnabled = false;
         passCount = 0;
+        noGrabLandlordPlayerCount = 0;
+        grabLandlordPlayerCount = 0;
+        lastGrabLandlordPlayer = 0;
+        startPlayer = lastWinner;
+        currentPlayer = startPlayer;
+        landlordPlayer = 0;
 
         CardManager.SetLastHand(CardSet.None);
+        StartDealCard();
+    }
+
+    private void StartDealCard()
+    {
+        StartCoroutine(CardManager.DealCardCoroutine());
     }
 
     private void ReturnToLobby()
     {
-        LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.lobby);
+        LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.Lobby);
     }
 
     private void DealCardOver()

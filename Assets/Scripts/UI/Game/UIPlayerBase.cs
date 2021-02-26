@@ -14,21 +14,21 @@ public class UIPlayerBase : MonoBehaviour
     protected Image headIconImage;
     protected UITimer timer;
     protected int _coin;
-    protected Text passTurnText;
+    protected Text statusText;
 
     protected virtual void Awake() //在Awake里完成变量初始化
     {
-        
+
     }
 
     protected virtual void Start()
     {
-        HidePassTurnText();
+        HideStatusText();
     }
 
     public virtual void MatchReset()
     {
-        HidePassTurnText();
+        HideStatusText();
         StopTimer();
         ClearCards();
     }
@@ -95,13 +95,18 @@ public class UIPlayerBase : MonoBehaviour
         timer.TimeUp += action;
     }
 
-    public void ShowPassTurnText()
+    public void ShowStatusText()
     {
-        passTurnText.gameObject.SetActive(true);
+        statusText.gameObject.SetActive(true);
     }
 
-    public void HidePassTurnText()
+    public void HideStatusText()
     {
-        passTurnText.gameObject.SetActive(false);
+        statusText.gameObject.SetActive(false);
+    }
+
+    public void SetStatusText(string str)
+    {
+        statusText.text = str;
     }
 }

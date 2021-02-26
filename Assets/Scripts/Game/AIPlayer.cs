@@ -25,4 +25,9 @@ public class AIPlayer
         //不会写AI，所以直接打能打过的较小的牌
         return cardHand.GetCardSetGreater(prevCardSet);
     }
+
+    public bool GrabLandlord()
+    {
+        return cardHand.GetCardHandScore() >= 7;
+    }
 }

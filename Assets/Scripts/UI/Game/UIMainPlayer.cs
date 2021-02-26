@@ -23,9 +23,21 @@ public class UIMainPlayer : UIPlayerBase
         // === auto generated code end === 
         cardsTransform = transform.Find("Cards");
         headIconImage = transform.Find("HeadIcon/HeadIconMask/HeadIconImage").GetComponent<Image>();
-        passTurnText = transform.Find("PassTurnText").GetComponent<Text>();
+        statusText = transform.Find("StatusText").GetComponent<Text>();
         timer = transform.Find("Timer").GetComponent<UITimer>();
         functionButtons = transform.Find("FunctionButtons").GetComponent<UIFunctionButtons>();
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        HideButtons();
+    }
+
+    public override void MatchReset()
+    {
+        base.MatchReset();
+        HideButtons();
     }
 
     public override void AddCard(Card card)
@@ -110,5 +122,25 @@ public class UIMainPlayer : UIPlayerBase
     public void DisableButtons()
     {
         functionButtons.DisableButtons();
+    }
+
+    public void ShowButtons()
+    {
+        functionButtons.ShowNoAnim();
+    }
+
+    public void HideButtons()
+    {
+        functionButtons.HideNoAnim();
+    }
+
+    public void ButtonsSwitchPlayCard()
+    {
+        functionButtons.SwitchPlayCard();
+    }
+
+    public void ButtonsSwitchGrabLandlord()
+    {
+        functionButtons.SwitchGrabLandlord();
     }
 }

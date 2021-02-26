@@ -24,6 +24,8 @@ public class MainPlayerManager : PlayerManagerBase
         EventCenter.AddListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.AddListener(EventType.PassTurn, PassTurn);
         EventCenter.AddListener(EventType.PlayCardHint, HintCards);
+        EventCenter.AddListener(EventType.GrabLandlord, GrabLandlord);
+        EventCenter.AddListener(EventType.NoGrabLandlord, NoGrabLandlord);
     }
 
     private void OnDestroy()
@@ -31,37 +33,63 @@ public class MainPlayerManager : PlayerManagerBase
         EventCenter.RemoveListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.RemoveListener(EventType.PassTurn, PassTurn);
         EventCenter.RemoveListener(EventType.PlayCardHint, HintCards);
-
+        EventCenter.RemoveListener(EventType.GrabLandlord, GrabLandlord);
+        EventCenter.RemoveListener(EventType.NoGrabLandlord, NoGrabLandlord);
     }
 
     protected override void EndTurnPlayCard()
     {
         base.EndTurnPlayCard();
-        view.DisableButtons();
+        view.HideButtons();
     }
 
     protected override void PassTurn()
     {
         base.PassTurn();
         view.UnselectAllCard();
-        view.DisableButtons();
+        view.HideButtons();
     }
 
-    public override void StartTurn()
+    protected override void EndTurnGrabLandlord(bool isGrab)
     {
-        base.StartTurn();
+        base.EndTurnGrabLandlord(isGrab);
+        view.HideButtons();
+    }
+
+    private void GrabLandlord()
+    {
+        EndTurnGrabLandlord(true);
+    }
+
+    private void NoGrabLandlord()
+    {
+        EndTurnGrabLandlord(false);
+    }
+
+    public override void StartTurn(TurnType turnType)
+    {
+        base.StartTurn(turnType);
+        if (turnType == TurnType.GarbLandlord)
+        {
+            view.ButtonsSwitchGrabLandlord();
+        }
+        else if (turnType == TurnType.PlayCard)
+        {
+            view.ButtonsSwitchPlayCard();
+        }
+        view.ShowButtons();
         view.EnableButtons();
     }
 
     private void FixedUpdate()
     {
-        if (IsAI && isMyTurn)
-        {
-            if (ai == null)
-                ai = new AIPlayer(cardHand);
-            CardSet cardSet = ai.PlayCard(CardManager.LastHand);
-            PlayCard(cardSet);
-        }
+        //if (IsAI && isMyTurn)
+        //{
+        //    if (ai == null)
+        //        ai = new AIPlayer(cardHand);
+        //    CardSet cardSet = ai.PlayCard(CardManager.LastHand);
+        //    PlayCard(cardSet);
+        //}
     }
 
     /// <summary>

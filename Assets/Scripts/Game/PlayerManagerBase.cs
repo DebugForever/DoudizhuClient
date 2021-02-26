@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
 
+public enum TurnType
+{
+    PlayCard,
+    GarbLandlord
+}
+
 public class PlayerManagerBase : MonoBehaviour
 {
     [NonSerialized] protected UIPlayerBase view;//[NonSerialized]用于解决unity重复序列化报错，但是不知道能不能解决。
@@ -16,6 +22,10 @@ public class PlayerManagerBase : MonoBehaviour
     protected CardHand cardHand;
 
     protected bool isMyTurn = false;
+
+    protected TurnType turnType;
+
+    protected bool isLandLord = false;
 
     /// <summary>
     /// 这个玩家的编号
@@ -59,15 +69,24 @@ public class PlayerManagerBase : MonoBehaviour
 
     protected void Start()
     {
-        view.AddTimeUpListener(EndTurnPlayCard);
+        view.AddTimeUpListener(DefaultEndTurn);
     }
 
-    public virtual void StartTurn()
+    public virtual void StartTurn(TurnType turnType)
     {
         Debug.LogFormat("player{0} turn started", playerIndex);
         view.StartTimer();
         isMyTurn = true;
-        view.HidePassTurnText();
+        this.turnType = turnType;
+        view.HideStatusText();
+    }
+
+    protected virtual void DefaultEndTurn()
+    {
+        if (turnType == TurnType.GarbLandlord)
+            EndTurnGrabLandlord(false);
+        else if (turnType == TurnType.PlayCard)
+            PassTurn();
     }
 
     protected virtual void EndTurnPlayCard()
@@ -83,11 +102,35 @@ public class PlayerManagerBase : MonoBehaviour
         view.StopTimer();
         gameManager.EndTurnPass();
         isMyTurn = false;
-        view.ShowPassTurnText();
+        view.SetStatusText("不出");
+        view.ShowStatusText();
+    }
+
+    protected virtual void EndTurnGrabLandlord(bool isGrab)
+    {
+        view.StopTimer();
+        gameManager.EndTurnGrabLandlord(isGrab);
+        isMyTurn = false;
+        if (isGrab)
+        {
+            view.SetStatusText("抢地主");
+            Debug.LogFormat("player{0} GrabLandlord", playerIndex);
+        }
+        else
+        {
+            view.SetStatusText("不抢");
+            Debug.LogFormat("player{0} NOT GrabLandlord", playerIndex);
+        }
+        view.ShowStatusText();
     }
 
     public int GetRemainCardCount()
     {
         return cardHand.CardCount;
+    }
+
+    public void BecomeLandlord()
+    {
+        isLandLord = true;
     }
 }
