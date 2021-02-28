@@ -8,6 +8,7 @@ public static class Constants
     public static class SceneName
     {
         public const string Lobby = "2_Main";
+        public const string GameOffline = "3_GameOffline";
     }
 
     public static class Game

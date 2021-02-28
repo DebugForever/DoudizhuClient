@@ -26,6 +26,7 @@ public class UIMainPlayer : UIPlayerBase
         statusText = transform.Find("StatusText").GetComponent<Text>();
         timer = transform.Find("Timer").GetComponent<UITimer>();
         functionButtons = transform.Find("FunctionButtons").GetComponent<UIFunctionButtons>();
+        lastHandCards = transform.Find("LastHandCards").GetComponent<UILastHandCards>();
     }
 
     protected override void Start()
@@ -38,6 +39,7 @@ public class UIMainPlayer : UIPlayerBase
     {
         base.MatchReset();
         HideButtons();
+        cards.Clear();
     }
 
     public override void AddCard(Card card)

@@ -128,15 +128,10 @@ public class MainPlayerManager : PlayerManagerBase
         }
     }
 
-    private void PlayCard(CardSet cardSet)
+    protected override void PlayCard(CardSet cardSet)
     {
-        //view.RemoveSelectedCards();
-        view.RemoveCards(cardSet.Cards);
+        base.PlayCard(cardSet);
         view.UnselectAllCard();
-
-        cardHand.RemoveCards(cardSet.Cards);
-        EventCenter.BroadCast(EventType.PlayerPlayCard, cardSet);
-        EndTurnPlayCard();
     }
 
     private void HintCards()

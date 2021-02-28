@@ -104,6 +104,7 @@ public class PlayerManagerBase : MonoBehaviour
         isMyTurn = false;
         view.SetStatusText("不出");
         view.ShowStatusText();
+        view.lastHandCards.ClearCards();
     }
 
     protected virtual void EndTurnGrabLandlord(bool isGrab)
@@ -132,5 +133,14 @@ public class PlayerManagerBase : MonoBehaviour
     public void BecomeLandlord()
     {
         isLandLord = true;
+    }
+
+    protected virtual void PlayCard(CardSet cardSet)
+    {
+        cardHand.RemoveCards(cardSet.Cards);
+        view.RemoveCards(cardSet.Cards);
+        view.lastHandCards.SetCards(cardSet.Cards);
+        EventCenter.BroadCast(EventType.PlayerPlayCard, cardSet);
+        EndTurnPlayCard();
     }
 }

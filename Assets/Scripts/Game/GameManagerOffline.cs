@@ -196,7 +196,6 @@ public class GameManagerOffline : MonoBehaviour
         p3Manager.Init(CardManager.Player3Hand, 3);
 
         EventCenter.AddListener(EventType.TestEvent, Test);
-        EventCenter.AddListener<CardSet>(EventType.PlayerPlayCard, PlayerPlayCard);
         EventCenter.AddListener(EventType.MatchExit, ReturnToLobby);
         EventCenter.AddListener(EventType.MatchReset, MatchReset);
         EventCenter.AddListener(EventType.DealCardOver, DealCardOver);
@@ -209,7 +208,6 @@ public class GameManagerOffline : MonoBehaviour
     private void OnDestroy()
     {
         EventCenter.RemoveListener(EventType.TestEvent, Test);
-        EventCenter.RemoveListener<CardSet>(EventType.PlayerPlayCard, PlayerPlayCard);
         EventCenter.RemoveListener(EventType.MatchExit, ReturnToLobby);
         EventCenter.RemoveListener(EventType.MatchReset, MatchReset);
         EventCenter.RemoveListener(EventType.DealCardOver, DealCardOver);
@@ -231,13 +229,6 @@ public class GameManagerOffline : MonoBehaviour
                 else
                     StartTurn(TurnType.PlayCard);
             }
-    }
-
-
-    private void PlayerPlayCard(CardSet cardSet)
-    {
-        view.lastHandCards.ClearCards();
-        view.lastHandCards.SetCards(cardSet.Cards);
     }
 
     /// <summary>

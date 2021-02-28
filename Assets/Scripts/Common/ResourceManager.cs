@@ -64,7 +64,7 @@ public static class ResourceManager
     public static Sprite GetCard(CardType cardType, int number)
     {
         //懒加载
-        if (cards[0][0] == null)
+        if (cards[0][1] == null)
             GetAllCards();
 
         if (cardType == CardType.JokerBlack)

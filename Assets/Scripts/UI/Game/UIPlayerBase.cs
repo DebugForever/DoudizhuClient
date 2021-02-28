@@ -15,6 +15,7 @@ public class UIPlayerBase : MonoBehaviour
     protected UITimer timer;
     protected int _coin;
     protected Text statusText;
+    public UILastHandCards lastHandCards { get; protected set; }
 
     protected virtual void Awake() //在Awake里完成变量初始化
     {
@@ -31,6 +32,7 @@ public class UIPlayerBase : MonoBehaviour
         HideStatusText();
         StopTimer();
         ClearCards();
+        lastHandCards.ClearCards();
     }
 
     public string username

@@ -37,10 +37,7 @@ public class OtherPlayerManager : PlayerManagerBase
                 PassTurn();
                 yield break;
             }
-            cardHand.RemoveCards(result.Cards);
-            view.RemoveCards(result.Cards);
-            EventCenter.BroadCast(EventType.PlayerPlayCard, result);
-            EndTurnPlayCard();
+            PlayCard(result);
         }
         else
         {

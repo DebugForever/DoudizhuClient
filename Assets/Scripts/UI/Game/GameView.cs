@@ -9,7 +9,6 @@ public class GameView : MonoBehaviour
     public UIMainPlayer mainPlayerView { get; private set; }
     public UIOtherPlayer player2View { get; private set; }
     public UIOtherPlayer player3View { get; private set; }
-    public UILastHandCards lastHandCards { get; private set; }
     public UIResultPanel resultPanel { get; private set; }
     public UIUnder3Cards under3Cards { get; private set; }
 
@@ -19,7 +18,6 @@ public class GameView : MonoBehaviour
         mainPlayerView = transform.Find("MainPlayer").GetComponent<UIMainPlayer>();
         player2View = transform.Find("Player2").GetComponent<UIOtherPlayer>();
         player3View = transform.Find("Player3").GetComponent<UIOtherPlayer>();
-        lastHandCards = transform.Find("LastHandCards").GetComponent<UILastHandCards>();
         resultPanel = transform.Find("ResultPanel").GetComponent<UIResultPanel>();
         under3Cards = transform.Find("Under3Cards").GetComponent<UIUnder3Cards>();
 
@@ -61,7 +59,6 @@ public class GameView : MonoBehaviour
         mainPlayerView.MatchReset();
         player2View.MatchReset();
         player3View.MatchReset();
-        lastHandCards.ClearCards();
         under3Cards.MatchReset();
     }
 
