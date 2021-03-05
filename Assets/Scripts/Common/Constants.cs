@@ -9,6 +9,7 @@ public static class Constants
     {
         public const string Lobby = "2_Main";
         public const string GameOffline = "3_GameOffline";
+        public const string GameOnline = "4_GameOnline";
     }
 
     public static class Game

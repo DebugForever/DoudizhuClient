@@ -44,9 +44,9 @@ public class ClientPeer
             Debug.Log("连接服务器成功");
             StartReceive();
         }
-        catch (Exception e)
+        catch (SocketException)
         {
-            Debug.LogError(e);
+            Debug.LogError("连接服务器失败");
         }
     }
 
@@ -116,9 +116,9 @@ public class ClientPeer
         {
             clientSocket.Send(data);
         }
-        catch (Exception e)
+        catch (SocketException)
         {
-            Debug.LogError(e);
+            Debug.LogError("发送数据失败，请检查网络连接");
         }
     }
 

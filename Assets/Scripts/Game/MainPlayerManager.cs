@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
@@ -19,14 +20,15 @@ public class MainPlayerManager : PlayerManagerBase
         base.view = view;//base.view 是没有赋值的
         gameManager = GetComponentInParent<GameManagerOffline>();
 
-        //注意每一个玩家出牌，所有玩家都会收到这个事件，但是只有1个玩家需要相应这个事件
-        //这个没有办法优化，因为这是解耦的必要开销。除非每个玩家出牌都使用不同的事件（这显然不行）。
         EventCenter.AddListener(EventType.PlayCard, MainPlayerPlayCard);
         EventCenter.AddListener(EventType.PassTurn, PassTurn);
         EventCenter.AddListener(EventType.PlayCardHint, HintCards);
         EventCenter.AddListener(EventType.GrabLandlord, GrabLandlord);
         EventCenter.AddListener(EventType.NoGrabLandlord, NoGrabLandlord);
+        EventCenter.AddListener(EventType.Ready, Ready);
+        EventCenter.AddListener(EventType.UnReady, UnReady);
     }
+
 
     private void OnDestroy()
     {
@@ -35,6 +37,8 @@ public class MainPlayerManager : PlayerManagerBase
         EventCenter.RemoveListener(EventType.PlayCardHint, HintCards);
         EventCenter.RemoveListener(EventType.GrabLandlord, GrabLandlord);
         EventCenter.RemoveListener(EventType.NoGrabLandlord, NoGrabLandlord);
+        EventCenter.RemoveListener(EventType.Ready, Ready);
+        EventCenter.RemoveListener(EventType.UnReady, UnReady);
     }
 
     protected override void EndTurnPlayCard()
@@ -147,6 +151,25 @@ public class MainPlayerManager : PlayerManagerBase
             PassTurn();
             return;
         }
+        view.UnselectAllCard();
         view.SelectCards(hintSet.Cards);
     }
+
+    //联网使用，单机没有准备
+    private void Ready()
+    {
+        view.SetStatusText("已准备");
+        view.ShowStatusText();
+        Models.gameModel.roomModel.Ready(Models.gameModel.userInfoDto);
+        NetMsgCenter.Instance.SendReadyMsg(true);
+    }
+
+    //联网使用，单机没有准备
+    private void UnReady()
+    {
+        view.HideStatusText();
+        Models.gameModel.roomModel.UnReady(Models.gameModel.userInfoDto);
+        NetMsgCenter.Instance.SendReadyMsg(false);
+    }
+
 }

@@ -97,4 +97,15 @@ public static class ResourceManager
     {
         return Resources.Load<GameObject>("Prefabs/MainPlayerCard");
     }
+
+    public static AudioClip GetSendCardAudio()
+    {
+        return Resources.Load<AudioClip>("Audio/sendcard");
+    }
+
+    public static AudioClip GetBGAudio()
+    {
+        return Resources.Load<AudioClip>("Audio/bg");
+    }
+
 }

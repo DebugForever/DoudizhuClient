@@ -45,7 +45,7 @@ public class RegisterPanel : MonoBehaviour
         }
         else
         {
-            NetMsgCenter.instance.SendRegisterMsg(userNameField.text, passwordField.text);
+            NetMsgCenter.Instance.SendRegisterMsg(userNameField.text, passwordField.text);
         }
     }
 

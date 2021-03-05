@@ -58,7 +58,7 @@ public class LoginPanel : HideablePanel
         }
         else
         {
-            NetMsgCenter.instance.SendLoginMsg(userNameField.text, passwordField.text);
+            NetMsgCenter.Instance.SendLoginMsg(userNameField.text, passwordField.text);
         }
     }
 

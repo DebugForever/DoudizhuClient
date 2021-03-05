@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ServerProtocol</name>
+    </assembly>
+    <members>
+        <member name="F:ServerProtocol.Code.AccountCode.registerCReq">
+             <summary>
+            客户端注册请求
+             </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.registerSRes">
+            <summary>
+            服务器响应注册请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.loginCReq">
+            <summary>
+            客户端登录请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.loginSRes">
+            <summary>
+            服务器响应登录请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.getUserInfoCReq">
+            <summary>
+            客户端获取用户信息请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.getUserInfoSRes">
+            <summary>
+            服务器响应获取用户信息请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.getRankListCReq">
+            <summary>
+            客户端获取排行榜请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountCode.getRankListSRes">
+            <summary>
+            服务器响应获取排行榜请求
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.success">
+            <summary>
+            请求成功
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.failure">
+            <summary>
+            请求失败
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.userNotFound">
+            <summary>
+            用户不存在
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.userExist">
+            <summary>
+            用户已存在（用于注册）
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.passwordNotMatch">
+            <summary>
+            用户名和密码不匹配
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.AccountReturnCode.userOnline">
+            <summary>
+            用户已在线（用于登录）
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.EnterCReq">
+            <summary>进入房间客户端请求</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.EnterSRes">
+            <summary>进入房间服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.EnterBrd">
+            <summary>进入房间服务器广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ExitCReq">
+            <summary>退出房间客户端请求</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ExitSRes">
+            <summary>退出房间服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ExitBrd">
+            <summary>退出房间服务器广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ReadyCReq">
+            <summary>准备客户端请求</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ReadySRes">
+            <summary>准备服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.ReadyBrd">
+            <summary>准备服务器广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.UnReadyBrd">
+            <summary>取消准备服务器广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.MatchCode.GameStartBrd">
+            <summary>开始游戏服务器广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.OpCode.account">
+            <summary>
+            账号模块
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.OpCode.match">
+            <summary>
+            匹配模块
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.OpCode.chat">
+            <summary>
+            聊天模块
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Code.OpCode.play">
+            <summary>
+            游戏模块
+            </summary>
+        </member>
+        <member name="T:ServerProtocol.Dto.MatchRoomUserInfoDto">
+            <summary>
+            匹配房间中的用户的传输模型
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Dto.MatchRoomUserInfoDto.placeIndex">
+            <summary>
+            在房间中的位置编号
+            </summary>
+            <remarks>这里指服务器中的位置编号。客户端中位置不一样，客户端当前账号永远是1号位。</remarks>
+        </member>
+        <member name="T:ServerProtocol.Dto.MatchRoomDto">
+            <summary>
+            匹配房间传输模型
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.EncodingTools.Encode(System.Byte[])">
+            <summary>
+            把字节流封装成数据包，解决粘包等问题
+            </summary>
+            <param name="data">要发送的字节流</param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.EncodingTools.Decode(System.Collections.Generic.List{System.Byte}@)">
+            <summary>
+            从传入list中取出一个数据包还原为字节流，留下剩余数据
+            </summary>
+            <param name="cache">需要解析的数据包（字节流）</param>
+            <returns>解析出的字节流，检测不到数据包则返回null</returns>
+        </member>
+        <member name="P:ServerProtocol.NetMsg.opCode">
+            <summary>
+            操作码
+            </summary>
+        </member>
+        <member name="P:ServerProtocol.NetMsg.subOpCode">
+            <summary>
+            副操作码
+            </summary>
+        </member>
+        <member name="P:ServerProtocol.NetMsg.value">
+            <summary>
+            传递信息的对象
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.NetMsg.Reset(System.Int32,System.Int32,System.Object)">
+            <summary>
+            重设状态，减少new的使用
+            </summary>
+            <param name="opCode"></param>
+            <param name="subOpCode"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ServerProtocol.NetMsg.Deserialize(System.Byte[])">
+            <summary>
+            将字节流反序列化为对象
+            </summary>
+            <param name="data">需要解析的字节流</param>
+            <returns>解析出的对象</returns>
+        </member>
+        <member name="M:ServerProtocol.NetMsg.Serialize">
+            <summary>
+            将对象序列化为字节流
+            </summary>
+            <returns>序列化后的字节流</returns>
+        </member>
+    </members>
+</doc>

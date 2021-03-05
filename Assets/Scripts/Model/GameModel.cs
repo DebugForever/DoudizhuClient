@@ -8,6 +8,7 @@ namespace MyModel
     public class GameModel
     {
         public UserInfoDto userInfoDto;
+        public RoomModel roomModel;
     }
 
 }

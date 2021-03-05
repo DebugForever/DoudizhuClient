@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ServerProtocol.Dto;
 
 public class UIPlayerBase : MonoBehaviour
 {
@@ -57,7 +58,7 @@ public class UIPlayerBase : MonoBehaviour
         go.transform.SetParent(cardsTransform);
         SingleCard singleCard = go.GetComponent<SingleCard>();
         singleCard.card = card;
-        //singleCard.FaceDown();
+        singleCard.FaceDown();
     }
 
     public virtual void AddCards(Card[] cards)
@@ -110,5 +111,22 @@ public class UIPlayerBase : MonoBehaviour
     public void SetStatusText(string str)
     {
         statusText.text = str;
+    }
+
+    public void ResetPlayerUI(MatchRoomUserInfoDto dto)
+    {
+        UserInfoDto userInfo = dto.userInfo;
+        username = userInfo.username;
+        headIcon = ResourceManager.GetHeadIcon(userInfo.iconName);
+        coin = userInfo.coin;
+        if (dto.ready)
+        {
+            statusText.text = "已准备";
+            ShowStatusText();
+        }
+        else
+        {
+            HideStatusText();
+        }
     }
 }

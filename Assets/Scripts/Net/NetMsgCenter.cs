@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using ServerProtocol;
 using System;
+using System.Net.Sockets;
 
 /// <summary>
 /// 负责管理网络消息的发送类，做成单例类
 /// </summary>
-public class NetMsgCenter : MonoBehaviour
+public class NetMsgCenter : MonoSingleton<NetMsgCenter>
 {
-    public static NetMsgCenter instance { get; private set; }
-
     public ClientPeer client { get; private set; }
     private readonly ChatModule chatModule = new ChatModule();
     private readonly PlayModule playModule = new PlayModule();
@@ -21,22 +20,15 @@ public class NetMsgCenter : MonoBehaviour
 
     private Dictionary<Tuple<int, int>, Action<NetMsg>> CallbackOnceDict = new Dictionary<Tuple<int, int>, Action<NetMsg>>();
 
-    #region unity消息
-    private void Awake()
+    protected override void Init()
     {
-        if (instance == null)
-        {
-            instance = this;
-            client = new ClientPeer();
-            client.Connect("127.0.0.1", 6666);
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            //防止多次加载脚本导致冗余对象
-            Destroy(gameObject);
-        }
+        base.Init();
+        client = new ClientPeer();
+        client.Connect("127.0.0.1", 6666);
+        DontDestroyOnLoad(gameObject);
     }
+
+    #region unity消息
 
     private void FixedUpdate()
     {
@@ -126,5 +118,13 @@ public class NetMsgCenter : MonoBehaviour
         SendNetMsg(OpCode.account, AccountCode.loginCReq, dto);
     }
 
+    public void SendEnterRoomMsg()
+    {
+        SendNetMsg(OpCode.match, MatchCode.EnterCReq, null);
+    }
 
+    public void SendReadyMsg(bool ready)
+    {
+        SendNetMsg(OpCode.match, MatchCode.ReadyCReq, ready);
+    }
 }

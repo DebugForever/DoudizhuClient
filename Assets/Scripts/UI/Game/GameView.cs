@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ServerProtocol.Dto;
 
 //view指视图，就是MVC中的View层
 public class GameView : MonoBehaviour
@@ -27,6 +28,7 @@ public class GameView : MonoBehaviour
         EventCenter.AddListener<Card[]>(EventType.MainPlayerRemoveCards, MainPlayerRemoveCards);
         EventCenter.AddListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
         EventCenter.AddListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
+        EventCenter.AddListener(EventType.RefreshPlayerUI, RefreshPlayerUI);
     }
 
 
@@ -45,6 +47,7 @@ public class GameView : MonoBehaviour
         EventCenter.RemoveListener<Card[]>(EventType.MainPlayerRemoveCards, MainPlayerRemoveCards);
         EventCenter.RemoveListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
         EventCenter.RemoveListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
+        EventCenter.RemoveListener(EventType.RefreshPlayerUI, RefreshPlayerUI);
     }
 
     private void Init()
@@ -54,6 +57,65 @@ public class GameView : MonoBehaviour
         player3View.ClearCards();
     }
 
+    /// <summary>
+    /// 根据models里面的数据改变UI
+    /// improve 冗余的操作多，即使只是改变准备状态都会使所有玩家UI重置一次，而不是精确的改变准备UI。
+    /// 但是这样做的优点是可以少写很多方法。
+    /// 需求很像Vue的ViewModel，即改变model会以最小的代价改变view
+    /// </summary>
+    private void RefreshPlayerUI()
+    {
+        var userList = Models.gameModel.roomModel.roomUserList;
+        for (int i = 0; i < userList.Count; i++)
+        {
+            MatchRoomUserInfoDto user = userList[i];
+            ResetPlayerUiByIndex(i, user, true);
+        }
+        for (int i = userList.Count; i < 3; i++) // 对于房间未满的情况，隐藏剩下位置的用户信息
+        {
+            ResetPlayerUiByIndex(i, null, false);
+        }
+
+    }
+
+    private void ResetPlayerUiByIndex(int index, MatchRoomUserInfoDto user, bool show)
+    {
+        switch (index)
+        {
+            case 0:
+                if (show)
+                    mainPlayerView.ResetPlayerUI(user);
+                break;
+            case 1:
+                if (show)
+                {
+                    player2View.ShowInfo();
+                    player2View.ResetPlayerUI(user);
+                }
+                else
+                {
+                    player2View.HideInfo();
+                    player2View.HideStatusText(); // 退出房间时，准备提示也要隐藏
+                }
+                break;
+            case 2:
+                if (show)
+                {
+                    player3View.ShowInfo();
+                    player3View.ResetPlayerUI(user);
+                }
+                else
+                {
+                    player3View.HideInfo();
+                    player3View.HideStatusText();
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 重开一局游戏
+    /// </summary>
     public void MatchReset()
     {
         mainPlayerView.MatchReset();

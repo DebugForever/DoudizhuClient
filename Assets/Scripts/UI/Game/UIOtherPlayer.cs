@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class UIOtherPlayer : UIPlayerBase
 {
+    private GameObject go_InfoPanel;
     protected override void Awake()
     {
         // === auto generated code begin === 
@@ -17,6 +18,23 @@ public class UIOtherPlayer : UIPlayerBase
         timer = transform.Find("Timer").GetComponent<UITimer>();
         statusText = transform.Find("StatusText").GetComponent<Text>();
         lastHandCards = transform.Find("LastHandCards").GetComponent<UILastHandCards>();
+
+        go_InfoPanel = transform.Find("InfoPanel").gameObject;
     }
 
+    /// <summary>
+    /// 隐藏用户信息面板
+    /// </summary>
+    public void HideInfo()
+    {
+        go_InfoPanel.SetActive(false);
+    }
+
+    /// <summary>
+    /// 显示用户信息面板
+    /// </summary>
+    public void ShowInfo()
+    {
+        go_InfoPanel.SetActive(true);
+    }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIUnder3Cards : MonoBehaviour
+public class UIUnder3Cards : HideablePanel
 {
     private SingleCard[] underCards = new SingleCard[3];
 

@@ -22,6 +22,10 @@
     GrabLandlord,
     ///<summary>不抢按钮</summary>
     NoGrabLandlord,
+    ///<summary>准备按钮</summary>
+    Ready,
+    ///<summary>取消准备按钮</summary>
+    UnReady,
     ///<summary>给主玩家添加一些牌</summary>
     MainPlayerAddCards,
     ///<summary>给玩家2添加一些牌</summary>
@@ -36,6 +40,8 @@
     Player3RemoveCards,
     ///<summary>设置底牌</summary>
     SetUnder3Cards,
+    ///<summary>根据RoomModel更改玩家UI</summary>
+    RefreshPlayerUI,
     ///<summary>任意玩家出牌</summary>
     PlayerPlayCard,
     ///<summary>玩家出牌超时</summary>
@@ -48,4 +54,6 @@
     MatchOver,
     ///<summary>发牌结束</summary>
     DealCardOver,
+    ///<summary>自己进入匹配房间</summary>
+    SelfEnterRoom,
 }

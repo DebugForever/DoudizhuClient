@@ -24,15 +24,19 @@ public class MainPanel : MonoBehaviour
         // === auto generated code end === 
         rankBtn.onClick.AddListener(() =>
         {
-            NetMsgCenter.instance.SendNetMsg(OpCode.account, AccountCode.getRankListCReq, null);
+            NetMsgCenter.Instance.SendNetMsg(OpCode.account, AccountCode.getRankListCReq, null);
             EventCenter.BroadCast(EventType.UIShowRankList);
         });
 
-        playOfflineBtn.onClick.AddListener(
-            () =>
-            {
-                LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.GameOffline);
-            });
+        playOfflineBtn.onClick.AddListener(() =>
+        {
+            LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.GameOffline);
+        });
+
+        playOnlineBtn.onClick.AddListener(() =>
+        {
+            LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.GameOnline);
+        });
     }
 
     // Update is called once per frame

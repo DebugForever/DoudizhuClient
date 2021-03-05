@@ -5,6 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// 管理所有卡牌的类，因为很多地方需要访问，直接做成单例了
+/// 其实不应该做成单例，因为这个类只在离线游戏中有用
 /// </summary>
 public static class CardManagerOffline
 {
@@ -64,17 +65,18 @@ public static class CardManagerOffline
         Card[] Player3Cards = Player3Hand.GetCards();
 
         const int takeCount = Constants.Game.DealCardTakeCount;
-        const float Seconds = Constants.Game.DealCardPeriod;
+        const float dealCardPeriod = Constants.Game.DealCardPeriod;
 
         underCards = allCards.Skip(count * 3).Take(underCardCount).ToArray();
         EventCenter.BroadCast(EventType.SetUnder3Cards, underCards);
 
         for (int i = 0; i < mainPlayerCards.Length; i += takeCount)
         {
+            AudioManager.Instance.PlaySendCard();
             EventCenter.BroadCast(EventType.MainPlayerAddCards, mainPlayerCards.Skip(i).Take(takeCount).ToArray());
             EventCenter.BroadCast(EventType.Player2AddCards, Player2Cards.Skip(i).Take(takeCount).ToArray());
             EventCenter.BroadCast(EventType.Player3AddCards, Player3Cards.Skip(i).Take(takeCount).ToArray());
-            yield return new WaitForSeconds(Seconds);
+            yield return new WaitForSeconds(dealCardPeriod);
         }
         EventCenter.BroadCast(EventType.DealCardOver);
     }

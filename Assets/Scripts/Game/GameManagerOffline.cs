@@ -60,6 +60,7 @@ public class GameManagerOffline : MonoBehaviour
         {
             EndTurnCommon();
             passCount = 0;
+            AudioManager.Instance.PlaySendCard();
         }
     }
 
@@ -117,6 +118,13 @@ public class GameManagerOffline : MonoBehaviour
                     landlordPlayer = lastGrabLandlordPlayer;
                 }
                 GrabLandlordOver();
+                return;
+            }
+
+            //三个人不抢，直接重开
+            if (noGrabLandlordPlayerCount >= 3 && grabLandlordPlayerCount == 0)
+            {
+                MatchReset();
                 return;
             }
 
@@ -240,7 +248,6 @@ public class GameManagerOffline : MonoBehaviour
         p1Manager.MatchReset();
         p2Manager.MatchReset();
         p3Manager.MatchReset();
-
 
         turnStarted = false;
         turnEnded = true;
