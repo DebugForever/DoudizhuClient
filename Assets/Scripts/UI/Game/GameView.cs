@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ServerProtocol.Dto;
+using ServerProtocol.SharedCode;
 
 //view指视图，就是MVC中的View层
 public class GameView : MonoBehaviour
@@ -29,6 +30,7 @@ public class GameView : MonoBehaviour
         EventCenter.AddListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
         EventCenter.AddListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
         EventCenter.AddListener(EventType.RefreshPlayerUI, RefreshPlayerUI);
+        EventCenter.AddListener(EventType.MatchStart, MatchStart);
     }
 
 
@@ -48,6 +50,7 @@ public class GameView : MonoBehaviour
         EventCenter.RemoveListener<Card[]>(EventType.Player2RemoveCards, Player2RemoveCards);
         EventCenter.RemoveListener<Card[]>(EventType.Player3RemoveCards, Player3RemoveCards);
         EventCenter.RemoveListener(EventType.RefreshPlayerUI, RefreshPlayerUI);
+        EventCenter.RemoveListener(EventType.MatchStart, MatchStart);
     }
 
     private void Init()
@@ -76,6 +79,21 @@ public class GameView : MonoBehaviour
             ResetPlayerUiByIndex(i, null, false);
         }
 
+    }
+
+    public UIPlayerBase GetPlayerUiByIndex(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                return mainPlayerView;
+            case 1:
+                return player2View;
+            case 2:
+                return player3View;
+            default:
+                return null;
+        };
     }
 
     private void ResetPlayerUiByIndex(int index, MatchRoomUserInfoDto user, bool show)
@@ -111,6 +129,19 @@ public class GameView : MonoBehaviour
                 }
                 break;
         }
+    }
+
+    /// <summary>
+    /// 一局游戏开始，调整一些UI
+    /// </summary>
+    private void MatchStart()
+    {
+        mainPlayerView.HideStatusText();
+        mainPlayerView.ButtonsSwitchGrabLandlord();
+        mainPlayerView.HideButtons();
+        player2View.HideStatusText();
+        player3View.HideStatusText();
+        under3Cards.ShowNoAnim();
     }
 
     /// <summary>

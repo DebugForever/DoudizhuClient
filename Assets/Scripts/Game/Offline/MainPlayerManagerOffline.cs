@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
-
-public class MainPlayerManager : PlayerManagerBase
+using ServerProtocol.SharedCode;
+public class MainPlayerManagerOffline : PlayerManagerOfflineBase
 {
     private new UIMainPlayer view;
 
@@ -25,8 +25,6 @@ public class MainPlayerManager : PlayerManagerBase
         EventCenter.AddListener(EventType.PlayCardHint, HintCards);
         EventCenter.AddListener(EventType.GrabLandlord, GrabLandlord);
         EventCenter.AddListener(EventType.NoGrabLandlord, NoGrabLandlord);
-        EventCenter.AddListener(EventType.Ready, Ready);
-        EventCenter.AddListener(EventType.UnReady, UnReady);
     }
 
 
@@ -37,8 +35,6 @@ public class MainPlayerManager : PlayerManagerBase
         EventCenter.RemoveListener(EventType.PlayCardHint, HintCards);
         EventCenter.RemoveListener(EventType.GrabLandlord, GrabLandlord);
         EventCenter.RemoveListener(EventType.NoGrabLandlord, NoGrabLandlord);
-        EventCenter.RemoveListener(EventType.Ready, Ready);
-        EventCenter.RemoveListener(EventType.UnReady, UnReady);
     }
 
     protected override void EndTurnPlayCard()
@@ -153,23 +149,6 @@ public class MainPlayerManager : PlayerManagerBase
         }
         view.UnselectAllCard();
         view.SelectCards(hintSet.Cards);
-    }
-
-    //联网使用，单机没有准备
-    private void Ready()
-    {
-        view.SetStatusText("已准备");
-        view.ShowStatusText();
-        Models.gameModel.roomModel.Ready(Models.gameModel.userInfoDto);
-        NetMsgCenter.Instance.SendReadyMsg(true);
-    }
-
-    //联网使用，单机没有准备
-    private void UnReady()
-    {
-        view.HideStatusText();
-        Models.gameModel.roomModel.UnReady(Models.gameModel.userInfoDto);
-        NetMsgCenter.Instance.SendReadyMsg(false);
     }
 
 }

@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace MyModel
 {
-
     public class RoomModel
     {
         public List<MatchRoomUserInfoDto> roomUserList { get; private set; }
@@ -80,11 +79,21 @@ namespace MyModel
                 Debug.LogError("自己不在房间中！");
                 return;
             }
+            else if (index == 0) //自己已经在第一位，不需要再移动了。
+            {
+                return;
+            }
 
             //把当前用户前面的放到列表末尾
             List<MatchRoomUserInfoDto> tempList = roomUserList.GetRange(0, index);
             roomUserList.RemoveRange(0, index);
             roomUserList.AddRange(tempList);
+        }
+
+        public int ServerPlaceIndexToClient(int placeIndex)
+        {
+            // ResetPosition();  不需要重排，因为进入房间会自动重排一次。
+            return roomUserList.FindIndex((item) => item.placeIndex == placeIndex);
         }
     }
 }

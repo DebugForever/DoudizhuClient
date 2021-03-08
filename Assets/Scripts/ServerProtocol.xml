@@ -127,6 +127,55 @@
             游戏模块
             </summary>
         </member>
+        <member name="F:ServerProtocol.Code.PlayCode.DealCardBrd">
+            <summary>发牌广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.GrabLandlordCReq">
+            <summary>抢地主客户端请求</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.GrabLandlordSRes">
+            <summary>抢地主服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.GrabLandlordBrd">
+            <summary>抢地主广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.NoGrabLandlordBrd">
+            <summary>不抢地主广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.GrabLandlordEndBrd">
+            <summary>抢地主结束广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.AddCardBrd">
+            <summary>添加牌广播</summary>
+            <remarks>抢地主成功时发送</remarks>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.StartTurnBrd">
+            <summary>开始回合广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.PlayCardCReq">
+            <summary>出牌客户端请求（传null表示不出）</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.PlayCardSRes">
+            <summary>出牌服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.PlayCardBrd">
+            <summary>出牌广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.PassPlayCardBrd">
+            <summary>不出牌广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.EndTurnCReq">
+            <summary>结束回合客户端请求</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.EndTurnSRes">
+            <summary>结束回合服务器响应</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.EndTurnBrd">
+            <summary>结束回合广播</summary>
+        </member>
+        <member name="F:ServerProtocol.Code.PlayCode.GameEndBrd">
+            <summary>游戏结束广播</summary>
+        </member>
         <member name="T:ServerProtocol.Dto.MatchRoomUserInfoDto">
             <summary>
             匹配房间中的用户的传输模型
@@ -142,6 +191,24 @@
             <summary>
             匹配房间传输模型
             </summary>
+        </member>
+        <member name="T:ServerProtocol.Dto.GrabLandlordEndDto">
+            <summary>
+            抢地主结束数据传输模型
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Dto.GrabLandlordEndDto.landlordIndex">
+            <summary>
+            成为地主的玩家编号
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Dto.GrabLandlordEndDto.UnderCards">
+            <summary>
+            三张底牌
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.Dto.PlayCardDto.playerIndex">
+            <summary>服务器发给客户端用</summary>
         </member>
         <member name="M:ServerProtocol.EncodingTools.Encode(System.Byte[])">
             <summary>
@@ -192,6 +259,332 @@
             将对象序列化为字节流
             </summary>
             <returns>序列化后的字节流</returns>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardType">
+            <summary>
+            卡牌的花色类型，包括桃心梅方和大小王
+            </summary>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardWeight">
+            <summary>
+            卡牌的权值，值越小表示它在比较关系中越小
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardWeight.wMin">
+            <summary>最小权值，没有对应的牌，作为边界使用</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardWeight.wMax">
+            <summary>最大权值，没有对应的牌，作为边界使用</summary>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardColor">
+            <summary>
+            卡牌的颜色类型，可以通过花色决定
+            </summary>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.Card">
+            <summary>
+            卡牌类，表示一张卡牌
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.Card.handId">
+            <summary>
+            用于标识这是手牌的第几张
+            </summary>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.Card.weight">
+            <summary>
+            大小，即比较权重
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.Card.#ctor(System.Int32)">
+            <summary>
+            通过ID生成一张卡牌
+            </summary>
+            <remarks>
+            卡牌id：小王52，大王53，
+            黑桃A~K 0~12
+            红心A~K 13~25
+            梅花A~K 26~38
+            方片A~K 39~51
+            </remarks>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.Card.JokerRed">
+            <summary>
+            大王
+            </summary>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.Card.JokerBlack">
+            <summary>
+            小王
+            </summary>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardHand">
+            <summary>
+            用于管理和简化手牌信息的类
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.GetCards">
+            <summary>
+            获取全部手牌
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardHand.cacheVaild">
+            <summary>weightCountDict更新之前，手牌是否变化过</summary>
+            <remarks>避免每次重新计算weightCountDict</remarks>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.ResetHandIds">
+            <summary>
+            重新设置每张卡的HandId，手牌张数不会超过20，
+            故没有对删除添加做优化，直接重置即可
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.Sort">
+            <summary>
+            以打牌最常见的方式排序，即降序排列
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.ExistCard(System.Int32,System.Int32)">
+            <summary>
+            手牌中是否存在一张牌
+            </summary>
+            <param name="weight">牌的权值</param>
+            <param name="minCount">最少需要几张</param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.ExistStraight(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            手牌中是否存在一个顺子
+            </summary>
+            <param name="weight">顺子最大牌的权值</param>
+            <param name="minCount">每张牌最少需要几张</param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.GetCards(System.Int32,System.Int32)">
+            <summary>
+            从手牌中获取指定卡牌count张，无验证
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetCards(ServerProtocol.SharedCode.Card[]@,System.Int32,System.Int32)">
+            <summary>
+            尝试从手牌中获取指定卡牌count张
+            </summary>
+            <param name="weight">指定的大小</param>
+            <param name="count">至少多少张</param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetStraight(ServerProtocol.SharedCode.Card[]@,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            尝试获取一个精确的顺子，支持非单顺
+            </summary>
+            <param name="weight">顺子的keyNumber（最大的一张）</param>
+            <param name="length">顺子长度</param>
+            <param name="straightRepeat">顺子重复数，比如双顺是2</param>
+            <returns>是否获取成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetStraightWithSubCards(ServerProtocol.SharedCode.Card[]@,System.Int32,System.Int32,System.Int32[],System.Int32)">
+            <summary>
+            尝试获取一个精确的带其他卡牌的顺子，支持非单顺，不检查顺子长度
+            </summary>
+            <param name="weight">顺子的keyNumber（最大的一张）</param>
+            <param name="length">顺子长度</param>
+            <param name="straightRepeat">顺子重复数，比如双顺是2</param>
+            <returns>是否获取成功</returns>
+            <remarks>可以用来获取三带一等牌型，这些牌型可以看成长度为1的带牌顺子</remarks>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetAnyStraightWithSubCards(ServerProtocol.SharedCode.Card[]@,System.Int32@,System.Int32@,System.Int32,System.Int32)">
+            <summary>
+            尝试获取一个任意的带其他卡牌的最长的顺子，支持非单顺，仅检测3~A，不检查顺子长度
+            </summary>
+            <param name="cards">输出获取的卡牌结果</param>
+            <param name="length">输出顺子的长度</param>
+            <param name="subCardCnt">带几张，不能超过straightRepeat</param>
+            <param name="straightRepeat">顺子重复数，比如双顺是2</param>
+            <returns>是否获取成功</returns>
+            <remarks>
+            这个和TryGetStraightWithSubCards不一样，只能拿顺子（3~A那种的）类型
+            3个out参数因为要构造CardSet，缺少类型
+            </remarks>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetAnyCardsWithSubCards(ServerProtocol.SharedCode.Card[]@,System.Int32@,System.Int32,System.Int32)">
+            <summary>
+            尝试获取一个任意的x带y的牌型，y可以为0，优先最小的
+            </summary>
+            <param name="cards">输出获取的卡牌结果</param>
+            <param name="keyNumber">输出获取的关键字（构造CardSet）</param>
+            <param name="mainCardCnt">主牌x需要几张</param>
+            <param name="subCardCnt">副牌y需要几张</param>
+            <returns>是否获取成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetExactCardSet(ServerProtocol.SharedCode.CardSet@,ServerProtocol.SharedCode.CardSetType,System.Int32,System.Int32)">
+            <summary>
+            尝试获取一个精确的牌型（精确到第一关键字）
+            </summary>
+            <returns>是否获取成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetCardSetSameTypeGreater(ServerProtocol.SharedCode.CardSet@,ServerProtocol.SharedCode.CardSet)">
+            <summary>
+            尝试获取一个可以压住指定牌型的相同牌型
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetCardSetBomb(ServerProtocol.SharedCode.CardSet@,System.Int32)">
+            <summary>
+            尝试从手牌中获取一个点数至少为minWeight的炸弹
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.TryGetCardSetJokerBomb(ServerProtocol.SharedCode.CardSet@)">
+            <summary>
+            尝试从手牌中获取一个王炸
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.GetAnyCardSet">
+            <summary>
+            从手牌中获取一个任意牌型
+            使用情况为先手可出任意牌型
+            </summary>
+            <remarks>获取牌型的顺序为：顺带类（比如飞机）>顺子类（比如连对）>单带类（比如三带一）>单出类（比如一对）>炸弹>王炸 ，
+            优先获取最小的，顺子优先最长的，非最后一手不出四带二，四带两对。 </remarks>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.GetCardSetGreater(ServerProtocol.SharedCode.CardSet)">
+            <summary>
+            获取一个可以压住指定牌型的牌型，如果没有则返回牌型Invalid
+            这个牌型为较优策略（不会整最优策略）
+            </summary>
+            <param name="prevSet"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardHand.GetCardHandScore">
+            <summary>
+            计算手牌评分，用于抢地主
+            </summary>
+            <remarks>目前是最简单方法，只看双王和2</remarks>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardSetType">
+            <summary>
+            出牌的类型
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Invalid">
+            <summary>
+            不合法的牌型
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.None">
+            <summary>无牌型</summary>
+            <remarks>没人要牌或者开始时会出现</remarks>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.JokerBomb">
+            <summary>王炸</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Bomb">
+            <summary>炸</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Single">
+            <summary>单张</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Pair">
+            <summary>对子</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Triple">
+            <summary>三张</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.TripleWithOne">
+            <summary>三带一</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.TripleWithPair">
+            <summary>三带二</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.Straight">
+            <summary>顺子</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.DoubleStraight">
+            <summary>双顺（连对）</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.TripleStraight">
+            <summary>三顺</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.TripleStraightWithOne">
+            <summary>三顺带1（飞机）</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.TripleStraightWithPair">
+            <summary>三顺带2（飞机带对子）</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.QuadraWithTwo">
+            <summary>四带二</summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.CardSetType.QuadraWithTwoPairs">
+            <summary>四带两对</summary>
+        </member>
+        <member name="T:ServerProtocol.SharedCode.CardSet">
+            <summary>
+            牌型，又可以说是一手牌，每次出牌使用这个类
+            </summary>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.CardSet.KeyNumber">
+            <summary>
+            权值，表示这种牌的大小
+            </summary>
+            <remarks>这里使用牌型的第一比较关键字里最大的牌，其实就是最多的一种牌中最大的一种</remarks>
+            <example>顺子34567的权值是7，三带二33399的权值是3</example>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.CardSet.RepeatCount">
+            <summary>
+            该牌型最小基础单元重复的次数，如果是定长牌型设置为1。
+            对于定长牌型，此属性无效。
+            不同重复次数的牌型无法比较。
+            </summary>
+            <example>
+            顺子34567的次数是5，连对55667788的次数是4，飞机JJJQQQ8844的次数是2，
+            一对22的次数是1（像一对这样的牌型长度无法变化，所以规定为1）
+            </example>
+        </member>
+        <member name="P:ServerProtocol.SharedCode.CardSet.Cards">
+            <summary>
+            包含的牌
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardSet.IsGreaterThan(ServerProtocol.SharedCode.CardSet)">
+            <summary>
+            这个牌型能否压住另一个牌型？
+            </summary>
+            <param name="other"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardSet.CompareTo(ServerProtocol.SharedCode.CardSet)">
+            <summary>
+            排序比较，在类型相同时可以用于大小比较
+            </summary>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardSet.GetCardSet(ServerProtocol.SharedCode.Card[])">
+            <summary>
+            这些牌能组成哪一种牌型？
+            </summary>
+            <param name="cards"></param>
+            <returns>能组成的牌型，无效返回invalid牌型</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardSet.GetHandDataCW(ServerProtocol.SharedCode.Card[])">
+            <summary>
+            返回处理过的一组卡牌数据，wc指元组中顺序为Weight，Count
+            </summary>
+            <param name="cards"></param>
+            <returns>一个升序排列的列表，排序关键字为(cnt,然后weight)，cnt:这种牌有几张，weight:这种牌的Card.weight，</returns>
+        </member>
+        <member name="M:ServerProtocol.SharedCode.CardSet.GetMinRepeat(ServerProtocol.SharedCode.CardSetType)">
+            <summary>
+            获取一种牌型的最小合法重复数
+            </summary>
+            to be improve 因为历史原因，这个方法没有在CardSet里面用到，
+            但是实际上应该用它来代替硬编码，来提高可修改性（降低耦合，是这个意思不）
+        </member>
+        <member name="P:ServerProtocol.SharedCode.CardSet.JokerBomb">
+            <summary>
+            预设的王炸牌型
+            </summary>
+        </member>
+        <member name="F:ServerProtocol.SharedCode.SharedConstants.TurnDuration">
+            <summary>每回合时间，单位毫秒</summary>
         </member>
     </members>
 </doc>

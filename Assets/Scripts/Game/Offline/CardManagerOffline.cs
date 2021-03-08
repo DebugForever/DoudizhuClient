@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Linq;
 using UnityEngine;
-
+using ServerProtocol.SharedCode;
 
 /// <summary>
 /// 管理所有卡牌的类，因为很多地方需要访问，直接做成单例了

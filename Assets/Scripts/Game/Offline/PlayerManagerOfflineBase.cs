@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
-
+using ServerProtocol.SharedCode;
 public enum TurnType
 {
     PlayCard,
     GarbLandlord
 }
 
-public class PlayerManagerBase : MonoBehaviour
+public class PlayerManagerOfflineBase : MonoBehaviour
 {
     [NonSerialized] protected UIPlayerBase view;//[NonSerialized]用于解决unity重复序列化报错，但是不知道能不能解决。
     protected GameManagerOffline gameManager;

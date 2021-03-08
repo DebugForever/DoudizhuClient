@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ServerProtocol.SharedCode;
 
 /// <summary>
 /// 电脑玩家类

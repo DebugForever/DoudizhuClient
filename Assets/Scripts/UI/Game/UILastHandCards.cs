@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using ServerProtocol.SharedCode;
 public class UILastHandCards : MonoBehaviour
 {
     public void SetCards(Card[] cards)

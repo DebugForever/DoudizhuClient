@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using ServerProtocol.SharedCode;
 
 public static class ResourceManager
 {
@@ -61,8 +62,10 @@ public static class ResourceManager
         cards[5][0] = jokers[1];
     }
 
-    public static Sprite GetCard(CardType cardType, int number)
+    public static Sprite GetCard(Card card)
     {
+        CardType cardType = card.type;
+        int number = card.number;
         //懒加载
         if (cards[0][1] == null)
             GetAllCards();

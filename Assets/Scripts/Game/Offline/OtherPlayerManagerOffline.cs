@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
-
-public class OtherPlayerManager : PlayerManagerBase
+using ServerProtocol.SharedCode;
+public class OtherPlayerManagerOffline : PlayerManagerOfflineBase
 {
     [SerializeField] private float AiDelay = 1.0f;
     private new UIOtherPlayer view; //覆盖基类的这个，因为类型不同，这是抽象的必要代价

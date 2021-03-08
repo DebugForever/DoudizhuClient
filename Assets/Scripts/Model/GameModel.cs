@@ -9,6 +9,7 @@ namespace MyModel
     {
         public UserInfoDto userInfoDto;
         public RoomModel roomModel;
+        public PlayModel playModel;
     }
 
 }

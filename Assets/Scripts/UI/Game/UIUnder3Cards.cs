@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using ServerProtocol.SharedCode;
 public class UIUnder3Cards : HideablePanel
 {
     private SingleCard[] underCards = new SingleCard[3];

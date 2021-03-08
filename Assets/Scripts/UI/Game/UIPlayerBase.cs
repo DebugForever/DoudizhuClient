@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ServerProtocol.Dto;
-
+using ServerProtocol.SharedCode;
 public class UIPlayerBase : MonoBehaviour
 {
     // === auto generated code begin === 
@@ -78,14 +78,28 @@ public class UIPlayerBase : MonoBehaviour
         }
     }
 
-    public void ClearCards()
+    /// <summary>
+    /// 移除手牌中最右边的一些卡牌，至多清空手牌。
+    /// </summary>
+    /// <param name="count">要移除的卡牌数量</param>
+    public virtual void RemoveRightCards(int count)
+    {
+        int childCount = cardsTransform.childCount;
+        int startIndex = Math.Max(childCount - count + 1, 0);
+        for (int i = startIndex; i < childCount; i++)
+        {
+            Destroy(cardsTransform.GetChild(i).gameObject);
+        }
+    }
+
+    public virtual void ClearCards()
     {
         MyTools.DestroyAllChild(cardsTransform);
     }
 
     public void StartTimer()
     {
-        timer.StartTimer(60);
+        timer.StartTimer(SharedConstants.TurnDuration / 1000);
     }
 
     public void StopTimer()
@@ -127,6 +141,17 @@ public class UIPlayerBase : MonoBehaviour
         else
         {
             HideStatusText();
+        }
+    }
+
+    public void AddFaceDownCards(int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            GameObject go = Instantiate(ResourceManager.GetSingleCardPrefab());
+            go.transform.SetParent(cardsTransform);
+            SingleCard singleCard = go.GetComponent<SingleCard>();
+            singleCard.FaceDown();
         }
     }
 }

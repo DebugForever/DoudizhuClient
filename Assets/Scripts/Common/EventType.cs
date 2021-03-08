@@ -56,4 +56,7 @@
     DealCardOver,
     ///<summary>自己进入匹配房间</summary>
     SelfEnterRoom,
+    ///<summary>一局游戏开始</summary>
+    MatchStart,
+
 }

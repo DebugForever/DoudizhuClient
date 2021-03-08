@@ -72,7 +72,7 @@ public class AccountModule : ClientModule
                 //登录成功，获取当前登录的用户信息
                 NetMsgCenter.Instance.SendNetMsg(OpCode.account, AccountCode.getUserInfoCReq, null);//这个请求不需要发送对象
                 EventCenter.BroadCast(EventType.UIFlashHint, "登录成功，加载用户信息。。。");
-                NetMsgCenter.Instance.ListenNetMsgOnce(OpCode.account, AccountCode.getUserInfoSRes, (NetMsg) =>
+                NetMsgCenter.Instance.ListenServerMsgOnce(OpCode.account, AccountCode.getUserInfoSRes, (msg) =>
                 {
                     LoadingManager.LoadSceneByLoadingPanel(Constants.SceneName.Lobby);
                 });//收到服务器发回的用户信息后再切换场景

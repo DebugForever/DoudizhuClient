@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CardManager = CardManagerOffline;//做在线模式的时候可以不用改代码
-
+using ServerProtocol.SharedCode;
 public class GameManagerOffline : MonoBehaviour
 {
     private GameView view;
-    private MainPlayerManager p1Manager;
-    private OtherPlayerManager p2Manager;
-    private OtherPlayerManager p3Manager;
+    private MainPlayerManagerOffline p1Manager;
+    private OtherPlayerManagerOffline p2Manager;
+    private OtherPlayerManagerOffline p3Manager;
 
     //回合管理，之后可能会独立出来
     private int currentPlayer = 1;
@@ -173,14 +173,14 @@ public class GameManagerOffline : MonoBehaviour
         turnEnabled = false;
     }
 
-    private PlayerManagerBase GetCurrentPlayerManager()
+    private PlayerManagerOfflineBase GetCurrentPlayerManager()
     {
         return GetPlayerManager(currentPlayer);
     }
 
-    private PlayerManagerBase GetPlayerManager(int playerIndex)
+    private PlayerManagerOfflineBase GetPlayerManager(int playerIndex)
     {
-        switch (playerIndex)
+        switch (playerIndex) // todo 这里的index与联机版不一样，应该统一从0开始。 
         {
             case 1:
                 return p1Manager;
@@ -196,11 +196,11 @@ public class GameManagerOffline : MonoBehaviour
     void Awake()
     {
         view = GetComponentInChildren<GameView>();
-        p1Manager = transform.Find("MainPlayer").GetComponent<MainPlayerManager>();
+        p1Manager = transform.Find("MainPlayer").GetComponent<MainPlayerManagerOffline>();
         p1Manager.Init(CardManager.MainPlayerHand);
-        p2Manager = transform.Find("Player2").GetComponent<OtherPlayerManager>();
+        p2Manager = transform.Find("Player2").GetComponent<OtherPlayerManagerOffline>();
         p2Manager.Init(CardManager.Player2Hand, 2);
-        p3Manager = transform.Find("Player3").GetComponent<OtherPlayerManager>();
+        p3Manager = transform.Find("Player3").GetComponent<OtherPlayerManagerOffline>();
         p3Manager.Init(CardManager.Player3Hand, 3);
 
         EventCenter.AddListener(EventType.TestEvent, Test);

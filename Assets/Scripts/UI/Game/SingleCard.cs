@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ServerProtocol.SharedCode;
 
 /// <summary>
 /// 显示出来的一张卡牌
@@ -24,14 +25,14 @@ public class SingleCard : MonoBehaviour
         {
             _card = value;
             if (!isBack)//如果是背面，则不需要替换图片
-                image.sprite = _card.GetSprite();
+                image.sprite = ResourceManager.GetCard(_card);
         }
     }
 
     public void FaceUp()
     {
         isBack = false;
-        image.sprite = _card.GetSprite();
+        image.sprite = ResourceManager.GetCard(_card);
     }
 
     public void FaceDown()

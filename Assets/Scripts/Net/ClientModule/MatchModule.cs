@@ -1,6 +1,8 @@
 ﻿using ServerProtocol.Dto;
 using ServerProtocol.Code;
 using MyModel;
+using System;
+using ServerProtocol.SharedCode;
 
 public class MatchModule : ClientModule
 {
@@ -35,6 +37,10 @@ public class MatchModule : ClientModule
             case MatchCode.UnReadyBrd:
                 Models.gameModel.roomModel.UnReady((UserInfoDto)value);
                 EventCenter.BroadCast(EventType.RefreshPlayerUI);
+                break;
+            case MatchCode.GameStartBrd:
+                Models.gameModel.playModel = new PlayModel();
+                EventCenter.BroadCast(EventType.MatchStart);
                 break;
             default:
                 break;

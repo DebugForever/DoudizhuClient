@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ServerProtocol.SharedCode;
 
 public class UIMainPlayer : UIPlayerBase
 {
@@ -48,6 +49,7 @@ public class UIMainPlayer : UIPlayerBase
         go.transform.SetParent(cardsTransform);
         MainPlayerCard mainPlayerCard = go.GetComponent<MainPlayerCard>();
         mainPlayerCard.card = card;
+        mainPlayerCard.card.handId = cards.Count;
         cards.Add(mainPlayerCard);
     }
 
@@ -62,6 +64,13 @@ public class UIMainPlayer : UIPlayerBase
             this.cards.RemoveAt(index - i);//删除会导致元素位置改变，所以要调整index
             Destroy(cardsTransform.GetChild(index).gameObject);//Destroy不会立即执行，所以不用调整index
         }
+        ResetHandId();
+    }
+
+    public override void ClearCards()
+    {
+        base.ClearCards();
+        cards.Clear();
     }
 
     public void SelectCards(Card[] cards)
@@ -105,7 +114,7 @@ public class UIMainPlayer : UIPlayerBase
             cards.RemoveAt(removeIndexs[i] - i);//删除会导致元素位置改变，所以要调整index
             Destroy(cardsTransform.GetChild(removeIndexs[i]).gameObject);//Destroy不会立即执行，所以不用调整index
         }
-
+        ResetHandId();
     }
 
     public void UnselectAllCard()
@@ -113,6 +122,15 @@ public class UIMainPlayer : UIPlayerBase
         foreach (MainPlayerCard mainPlayerCard in cards)
         {
             mainPlayerCard.Unselect();
+        }
+    }
+
+    private void ResetHandId()
+    {
+        for (int i = 0; i < cards.Count; i++)
+        {
+            MainPlayerCard mainPlayerCard = cards[i];
+            mainPlayerCard.card.handId = i;
         }
     }
 
